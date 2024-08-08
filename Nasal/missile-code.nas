@@ -4396,8 +4396,8 @@ var AIM = {
 		damage.statics["obj_"~uni] = [static, lat,lon,alt, heading,big];
 	},
 
-	notifyHit: func (RelativeAltitude, Distance, callsign, Bearing, reason, typeID, type, self) {
-		var msg = notifications.ArmamentNotification.new("mhit", 4, damage.DamageRecipient.typeID2emesaryID(typeID));
+	notifyHit: func (RelativeAltitude, Distance, callsign, Bearing, reason, typeID, type, self, unique_id) {
+		var msg = notifications.ArmamentNotification.new("mhit", 4, damage.DamageRecipient.typeID2emesaryID(typeID), unique_id);
         msg.RelativeAltitude = RelativeAltitude;
         msg.Bearing = Bearing;
         msg.Distance = Distance;
@@ -4464,7 +4464,7 @@ var AIM = {
 				me.printStats("%s  time %.1f", phrase, me.life_time);
 				if(getprop("payload/armament/msg") and hitPrimaryTarget and wh_mass > 0){
 					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
                 } else {
 	                lockMutex(mutexTimer);
@@ -4512,7 +4512,7 @@ var AIM = {
  					var cs = damage.processCallsign(me.testMe.get_Callsign());
  					var cc = me.testMe.get_Coord();
  					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [explode_coord.alt() - cc.alt(),min_distance,cs,explode_coord.course_to(cc),"mhit1",me.typeID, me.typeLong,0], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [explode_coord.alt() - cc.alt(),min_distance,cs,explode_coord.course_to(cc),"mhit1",me.typeID, me.typeLong,0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
 				} elsif (wh_mass > 0) {
 	                lockMutex(mutexTimer);
@@ -4532,7 +4532,7 @@ var AIM = {
 			me.printStats(phrase);
 			if (wh_mass > 0) {
 				lockMutex(mutexTimer);
-				appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [explode_coord.alt() - geo.aircraft_position().alt(),min_distance,cs,explode_coord.course_to(geo.aircraft_position()),"mhit2",me.typeID, me.typeLong, 1], -1]);
+				appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [explode_coord.alt() - geo.aircraft_position().alt(),min_distance,cs,explode_coord.course_to(geo.aircraft_position()),"mhit2",me.typeID, me.typeLong, 1, me.unique_id], -1]);
 				unlockMutex(mutexTimer);
 			}
 			me.sendout = 1;

@@ -12,7 +12,7 @@ var ArmamentNotification =
 # _kind - created, moved, deleted, impact (see notifications.nas)
 # _secondary_kind - This is the entity on which the activity is being performed. See below for predefined types.
 ##
-    new: func(_ident="none", _kind=0, _secondary_kind=0)
+    new: func(_ident="none", _kind=0, _secondary_kind=0, _unique=0)
     {
         var new_class = emesary.Notification.new("ArmamentNotification", _ident, ArmamentNotification_Id);
 
@@ -23,6 +23,8 @@ var ArmamentNotification =
         new_class.Distance = 0;
         new_class.Bearing = 0;
         new_class.RemoteCallsign = ""; # associated remote callsign.
+        new_class.UniqueIdentity = _unique;
+
 
         new_class.bridgeProperties = func
         {
@@ -51,6 +53,10 @@ var ArmamentNotification =
              {
             getValue:func{return emesary.TransferString.encode(new_class.RemoteCallsign);},
             setValue:func(v,root,pos){var dv=emesary.TransferString.decode(v,pos);new_class.RemoteCallsign=dv.value;return dv}, 
+             },
+             {
+            getValue:func{return emesary.TransferByte.encode(new_class.UniqueIdentity);},
+            setValue:func(v,root,pos){var dv=emesary.TransferByte.decode(v,pos);new_class.UniqueIdentity=dv.value;return dv},
              },
             ];
           };
