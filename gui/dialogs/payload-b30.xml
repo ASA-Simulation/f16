@@ -195,6 +195,17 @@
 
         <button>
             <pref-width>225</pref-width><pref-height>23</pref-height>
+            <row>13</row>
+            <col>0</col>
+            <legend>ASA - Air Superiority</legend>
+            <binding>
+                <command>nasal</command>
+                <script>pylons.a2a_super_asa();</script>
+            </binding>
+        </button>
+
+        <button>
+            <pref-width>225</pref-width><pref-height>23</pref-height>
             <row>14</row>
             <col>0</col>
             <legend>Air Superiority (2 bags)</legend>

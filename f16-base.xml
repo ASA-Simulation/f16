@@ -134,6 +134,7 @@
                 <smokewinderW1 type="int">0</smokewinderW1>
                 <smokewinderW9 type="int">0</smokewinderW9>
                 <AIM-120B type="bool">false</AIM-120B>
+                <AIM-ASA-120B type="bool">false</AIM-ASA-120B>
                 <wingmounts type="bool">true</wingmounts>
                 <ventraltank type="bool">false</ventraltank>
                 <wingtankL type="bool">false</wingtankL>

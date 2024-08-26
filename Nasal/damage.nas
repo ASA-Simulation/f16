@@ -168,6 +168,7 @@ var warheads = {
     "AIM-9X":            [98,   20.80,0,0],
     "R-23R":             [99,   55.00,0,0],# mig23 fox 1
     "5V27":              [100, 150.00,0,0],# Missile used with SA-3/S-125
+    "AIM-ASA-120B":      [101,   44.00,0,0],
     # Max id is 180
 };
 

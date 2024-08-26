@@ -162,6 +162,14 @@ var Station = {
 							}
 							return {};
 						};
+					} elsif (me.weaponName == "AIM-ASA-120") {
+						mf = func (struct) {
+							if (struct.dist_m != -1 and struct.dist_m*M2NM < 10 and struct.guidance == "sample") {
+								screen.log.write("AIM-ASA-120: Pitbull", 1,1,0);
+								return {"guidance":"radar","abort_midflight_function":1};
+							}
+							return {};
+						};
 					} elsif (me.weaponName == "MICA-EM") {
 						mf = func (struct) {
 							if (struct.guidance == "inertial" and !struct.hasTarget) {

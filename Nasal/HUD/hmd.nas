@@ -1003,7 +1003,7 @@ var F16_HMD = {
             hdp.weapon_selected = pylons.fcs.selectedType;
             var aim = pylons.fcs.getSelectedWeapon();
 
-            if (0 and hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-7") {
+            if (0 and hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-ASA-120" or hdp.weapon_selected == "AIM-7") {
                 if (!pylons.fcs.isLock()) {
                     me.radarLock.setTranslation(0, -me.sy*0.25+262*0.3*0.5);
                     me.rdL = 1;
@@ -1129,7 +1129,7 @@ var F16_HMD = {
                         }
                         if (0 and pylons.fcs != nil and pylons.fcs.isLock()) {
                             #me.target_locked.setRotation(45*D2R);
-                            if (hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-7" or hdp.weapon_selected == "AIM-9L" or hdp.weapon_selected == "AIM-9M" or hdp.weapon_selected == "AIM-9X" or hdp.weapon_selected == "IRIS-T") {
+                            if (hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-ASA-120" or hdp.weapon_selected == "AIM-7" or hdp.weapon_selected == "AIM-9L" or hdp.weapon_selected == "AIM-9M" or hdp.weapon_selected == "AIM-9X" or hdp.weapon_selected == "IRIS-T") {
                                 var aim = pylons.fcs.getSelectedWeapon();
                                 if (aim != nil) {
                                     var coords = aim.getSeekerInfo();
@@ -1152,7 +1152,7 @@ var F16_HMD = {
                                     }
                                 }
                             }
-                            if (hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-7") {
+                            if (hdp.weapon_selected == "AIM-120" or hdp.weapon_selected == "AIM-ASA-120" or hdp.weapon_selected == "AIM-7") {
                                 #me.radarLock.setTranslation(me.xcS, me.ycS); too perfect
                                 me.ASEC120Aspect.setRotation(D2R*(radar_system.apg68Radar.getPriorityTarget().get_heading()-hdp.getproper("heading")+180));
                                 me.rdL = 1;

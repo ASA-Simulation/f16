@@ -1597,7 +1597,7 @@ var DisplaySystem = {
                     me.osb12 = pylons.bore>0?"BORE":"SLAV";
                     me.osb3 = pylons.fcs.isAutocage()?"TD":"BP";
                     me.setWeaponStatus();
-                } elsif (me.wpn.type == "AIM-120" or me.wpn.type == "AIM-7") {
+                } elsif (me.wpn.type == "AIM-120"  or me.wpn.type == "AIM-ASA-120" or me.wpn.type == "AIM-7") {
                     me.wpnType ="air";
                     me.osb12 = "SLAV";
                     me.osb14 = "A-A";

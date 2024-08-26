@@ -2118,7 +2118,7 @@ var AIM = {
 			if (sep_thread) thread.semdown(me.frameToggle);
 			if(me.deleted) {
 				return;
-			}
+			}	
 		#############################################################################################################
 		#
 		#
@@ -2129,6 +2129,10 @@ var AIM = {
 		#
 		#############################################################################################################
 		me.counter += 1;#main counter for which number of loop we are in.
+		
+		if(me.counter>1 and me.typeID==101){
+				return;
+		}
 
 		if (me.pendingLaunchSound > -1 and me.life_time >= me.pendingLaunchSound and me.counter >= 5) {
 			# For some reason, sound needs some time to see that the property is false, so we let counter go to 5 before we set it to true.
