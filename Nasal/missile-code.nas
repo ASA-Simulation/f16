@@ -151,7 +151,7 @@ var LBM2SLUGS = 1/SLUGS2LBM;
 var slugs_to_lbm = SLUGS2LBM;# since various aircraft use this from outside missile, leaving it for backwards compat.
 
 var first_in_air = 0;# first missile is in the air, other missiles should not write to MP.
-var first_in_air_max_sec = 30;
+var first_in_air_max_sec = 300;
 
 var versionString = getprop("sim/version/flightgear");
 var version = split(".", versionString);
@@ -955,6 +955,7 @@ var AIM = {
 			if(getprop("payload/armament/msg")) {
 				lockMutex(mutexTimer);
 				#lat,lon,alt,rdar,typeID,typ,unique,thrustOn,callsign, heading, pitch, speed, is_deleted=0
+				print("notifyInFlight del");
 				appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [nil, -1, -1, 0, 0, me.typeID, "delete()", me.unique_id, 0,"", 0, 0, 0, 1], -1]);
 				unlockMutex(mutexTimer);
 			}
@@ -2689,7 +2690,8 @@ var AIM = {
         	lockMutex(mutexTimer);
         	var rdr = me.guidance=="radar";
         	var semiRdr = (me.guidance=="semi-radar" and !me.semiLostLock) or (me.guidance=="command" and me.guiding);# Continous wave illuminator active on the target
-			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.latN.getValue(), me.lonN.getValue(), me.altN.getValue()*FT2M,rdr,semiRdr,me.typeID,me.type,me.unique_id,me.thrust_lbf>0,(me.free or me.lostLOS or me.tooLowSpeed or me.flareLock or me.chaffLock)?"":me.callsign, me.hdg, me.pitch, me.new_speed_fps, 0], -1]);
+			print("notifyInFlight flight: ", me.free, me.lostLOS, me.tooLowSpeed, me.flareLock, me.chaffLock, me.callsign);
+			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.latN.getValue(), me.lonN.getValue(), me.altN.getValue()*FT2M,rdr,semiRdr,me.typeID,me.type,me.unique_id,me.thrust_lbf>0,(me.free or me.lostLOS or me.flareLock or me.chaffLock)?"":me.callsign, me.hdg, me.pitch, me.new_speed_fps, 0], -1]);
 			unlockMutex(mutexTimer);
         }
 
@@ -4383,7 +4385,7 @@ var AIM = {
         msg.u_fps = speed;
         #msg.isValid();
         notifications.geoBridgedTransmitter.NotifyAll(msg);
-#print("fox2.nas: transmit in flight");
+		print("fox2.nas: transmit in flight", callsign);
 #f14.debugRecipient.Receive(msg);
 	},
 
@@ -4434,6 +4436,7 @@ var AIM = {
 
 		if(getprop("payload/armament/msg")) {
 			lockMutex(mutexTimer);
+			print("notifyInFlight explode");
 			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.coord.lat(), me.coord.lon(), me.coord.alt(),0,0,me.typeID,me.type,me.unique_id,0,"", me.hdg, me.pitch, 0, 0], -1]);
 			unlockMutex(mutexTimer);
 		}
