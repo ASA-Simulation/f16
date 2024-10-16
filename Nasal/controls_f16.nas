@@ -56,7 +56,8 @@ var dogfight = func {
             }
         }
         #f16.rdrModeGM = 0;
-        screen.log.write("Radar "~radar_system.apg68Radar.getRange(), 0.5, 0.5, 1);
+        # BVR_ASA
+        screen.log.write("Radar BVR "~(radar_system.apg68Radar.getRange())~"nm", 0.5, 0.5, 1);
     } else {
         radar_system.apg68Radar.setRootMode(0, radar_system.apg68Radar.getPriorityTarget());
         setprop("instrumentation/radar/radar-enable", getprop("instrumentation/radar/radar-enable") and getprop("instrumentation/radar/radar-enable-std"));
@@ -75,7 +76,8 @@ var replay = func {
 }
 
 var radar_standby = func {
-	screen.log.write("Radar "~(getprop("instrumentation/radar/radar-enable")==0?"SILENT":"ACTIVE")~getprop("instrumentation/radar/radar2-range"), 0.5, 0.5, 1);
+    # BVR_ASA
+    screen.log.write("Radar "~(getprop("instrumentation/radar/radar-enable")==0?"SILENT":"ACTIVE")~" "~(getprop("instrumentation/radar/radar2-range")~"nm"), 0.5, 0.5, 1);
 }
 
 var masterarm = func {

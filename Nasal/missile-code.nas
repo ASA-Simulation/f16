@@ -151,7 +151,7 @@ var LBM2SLUGS = 1/SLUGS2LBM;
 var slugs_to_lbm = SLUGS2LBM;# since various aircraft use this from outside missile, leaving it for backwards compat.
 
 var first_in_air = 0;# first missile is in the air, other missiles should not write to MP.
-var first_in_air_max_sec = 300;
+var first_in_air_max_sec = 180; # BVR_ASA
 
 var versionString = getprop("sim/version/flightgear");
 var version = split(".", versionString);
