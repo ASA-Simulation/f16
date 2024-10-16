@@ -1486,7 +1486,7 @@ var code_ct = func () {
       setprop("sim/rendering/redout/enabled", 1);
       setprop("sim/rendering/redout/parameters/locked-by-airframe", 1);
       #call(func{fgcommand('dialog-close', multiplayer.dialog.dialog.prop())},nil,var err= []);# props.Node.new({"dialog-name": "location-in-air"}));
-      if (!m28_auto) call(func{multiplayer.dialog.del();},nil,var err= []);
+      #if (!m28_auto) call(func{multiplayer.dialog.del();},nil,var err= []);
       if (!getprop("gear/gear[0]/wow")) {
         call(func{fgcommand('dialog-close', props.Node.new({"dialog-name": "WeightAndFuel"}))},nil,var err2 = []);
         call(func{fgcommand('dialog-close', props.Node.new({"dialog-name": "system-failures"}))},nil,var err2 = []);
