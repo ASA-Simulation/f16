@@ -578,7 +578,13 @@ var DamageRecipient =
                             }
                             diff = diff * diff;
 
-                            var probability = diff / (maxDist*maxDist);
+                            var probability =  1.;
+                            var lethalRange = 25;
+
+                            if (dist >= lethalRange) {
+                              printf("Calculando probabilidade de");
+                              probability = diff / (maxDist*maxDist);
+                            }
 
                             if (use_hitpoints_instead_of_failure_modes_bool) {
                               var hpDist = maxDamageDistFromWarhead(hp_max);
