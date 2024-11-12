@@ -557,7 +557,7 @@ var a2a_super = func {
 # Air Superiority (AIM-ASA-120, 1 bag)
 var a2a_super_asa = func {
     #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
-    #	damage.damageLog.push("Air superiority loadout mounted");
+    	damage.damageLog.push("Air superiority loadout mounted");
     	pylon1.loadSet(pylonSets.aimAsa120W);
         pylon2.loadSet(pylonSets.aimAsa120);
         pylon3.loadSet(pylonSets.aimAsa120);
