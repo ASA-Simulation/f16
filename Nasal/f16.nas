@@ -1,5 +1,7 @@
 srand();# to avoid picking the same suspect numbers
 
+multiplayer.dialog.show(); #BVR_ASA
+
 # Use: f16.tree("/",0);
 var tree = func(n = "", graph = 1) {
     n = debug.propify(n);
