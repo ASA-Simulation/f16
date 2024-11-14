@@ -1658,7 +1658,7 @@ var b40_a2a_capext = func {
 # Air Superiority (AIM-120, 2 bags)
 var b40_a2a_superer = func {
     #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
-    	#damage.damageLog.push("Air superiority (ext. range) loadout mounted");
+    	damage.damageLog.push("Air superiority (ext. range) loadout mounted");
     	pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
         pylon3.loadSet(pylonSets.aim120);

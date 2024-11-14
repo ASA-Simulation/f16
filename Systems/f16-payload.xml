@@ -264,8 +264,8 @@
             <seeker-field-deg type="int">135</seeker-field-deg>
             <attack-steering-cue-enabled type="bool">true</attack-steering-cue-enabled>
             <max-g type="int">30</max-g>
-            <thrust-lbf-stage-1 type="double">4300</thrust-lbf-stage-1>                <!-- The python program -->
-            <thrust-lbf-stage-2 type="double">900</thrust-lbf-stage-2>                <!-- The python program -->
+            <thrust-lbf-stage-1 type="double">3300</thrust-lbf-stage-1>                <!-- The python program -->
+            <thrust-lbf-stage-2 type="double">330</thrust-lbf-stage-2>                <!-- The python program -->
             <stage-1-duration-sec type="double">10.0</stage-1-duration-sec>                <!-- The python program -->
             <stage-2-duration-sec type="double">30.0</stage-2-duration-sec>                <!-- The python program -->
             <self-destruct-time-sec type="double">110</self-destruct-time-sec>                <!-- guess -->
