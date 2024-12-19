@@ -16,6 +16,8 @@ var MONO = 0;
 
 var overlapHorizontal = 1.5;
 
+var targetIndex = 0; #BVR_ASA
+
 
 #   █████  ██ ██████  ██████   ██████  ██████  ███    ██ ███████     ██████   █████  ██████   █████  ██████
 #  ██   ██ ██ ██   ██ ██   ██ ██    ██ ██   ██ ████   ██ ██          ██   ██ ██   ██ ██   ██ ██   ██ ██   ██
@@ -892,7 +894,47 @@ var RadarMode = {
 	enterMode: func {
 	},
 	designatePriority: func (contact) {},
-	cycleDesignate: func {},
+	cycleDesignate: func {
+
+		#BVR_ASA
+
+		me.targetList = getCompleteList();
+		me.target_quantity = size(me.targetList);
+
+		if (!me.target_quantity or me.target_quantity == 0) {
+			me.priorityTarget = nil;
+	      	#screen.log.write("A "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
+			return;
+		}
+
+		if(me.target_quantity == 1) {
+			targetIndex = 0;
+			me.priorityTarget = me.targetList[targetIndex];
+	      	#screen.log.write("B "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
+			var prio = radar_system.apg68Radar.getPriorityTarget();
+        	radar_system.apg68Radar.setRootMode(1, prio);			
+			return;
+		}
+		
+		if(me.target_quantity > 1) {
+			targetIndex = targetIndex + 1;
+			if(targetIndex > (me.target_quantity - 1)) {
+				targetIndex = 0;
+				me.priorityTarget = me.targetList[targetIndex];
+		      	#screen.log.write("C "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
+				var prio = radar_system.apg68Radar.getPriorityTarget();
+        		radar_system.apg68Radar.setRootMode(1, prio);	
+				return;
+			} else {
+				me.priorityTarget = me.targetList[targetIndex];
+		      	#screen.log.write("D "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
+				var prio = radar_system.apg68Radar.getPriorityTarget();
+        		radar_system.apg68Radar.setRootMode(1, prio);	
+				return;
+			}l
+		}
+
+	},
 	testContact: func (contact) {},
 	prunedContact: func (c) {
 		if (c.equalsFast(me["priorityTarget"])) {
