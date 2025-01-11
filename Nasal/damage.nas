@@ -31,6 +31,9 @@ srand();
 var hp = hp_max;
 setprop("sam/damage", math.max(0,100*hp/hp_max));#used in HUD
 
+# BVR_ASA
+var last_missile_clock_pos = "";
+
 var shells = {
     # [id,damage,(name)]
     #
@@ -414,7 +417,7 @@ var DamageRecipient =
                 # Missile launch warning:
                 if (thrustOn) {
                   var launch = launched[notification.Callsign~notification.UniqueIdentity];
-                  if (launch == nil or elapsed - launch > 300) {
+                  #if (launch == nil or elapsed - launch > 300) { # BVR_ASA
                     launch = elapsed;
                     launched[notification.Callsign~notification.UniqueIdentity] = launch;
                     if (notification.Position.direct_distance_to(ownPos)*M2NM < mlw_max) {
@@ -425,9 +428,18 @@ var DamageRecipient =
                       if (rwr_to_screen) screen.log.write(out, 1,0.5,0);# temporary till someone models a RWR in RIO seat
                       print(out);
                       damageLog.push(sprintf("Missile Launch Warning from %03d degrees from %s.", bearing, notification.Callsign));
+
+                      # BVR_ASA
+                      var current_clock = degreesToClock(bearing);
+                      if(last_missile_clock_pos != current_clock) {
+                        var miss_mess = "Missile "~(current_clock)~" o'clock!";
+                        screen.log.write(miss_mess, 1.0, 0.2, 0.2);
+                        last_missile_clock_pos = current_clock;
+                      }
+
                       if (m28_auto) mig28.missileLaunch();
                     }
-                  }
+                  #}
                 }
 
                 # Missile approach warning:
@@ -1628,6 +1640,60 @@ var unitTest = func {
   print("unit test passed");
 }
 #unitTest();
+
+var degreesToClock = func (deg) {
+  
+  var clock = nil;
+
+  if(deg >= 0 and deg <= 360) {
+
+    if(deg >= 15 and deg <= 45) {
+      clock = "ONE";  
+    }
+    if(deg >= 45 and deg <= 75) {
+      clock = "TWO";  
+    }
+    if(deg >= 75 and deg <= 105) {
+      clock = "THREE";  
+    }
+    if(deg >= 105 and deg <= 135) {
+      clock = "FOUR";  
+    }
+    if(deg >= 135 and deg <= 165) {
+      clock = "FIVE";  
+    }
+    if(deg >= 165 and deg <= 195) {
+      clock = "SIX";  
+    }
+    if(deg >= 195 and deg <= 225) {
+      clock = "SEVEN";  
+    }
+    if(deg >= 225 and deg <= 255) {
+      clock = "EIGHT";  
+    }
+    if(deg >= 255 and deg <= 285) {
+      clock = "NINE";  
+    }
+    if(deg >= 285 and deg <= 315) {
+      clock = "TEN";  
+    }
+    if(deg >= 315 and deg <= 345) {
+      clock = "ELEVEN";  
+    }
+    if(deg >= 345 and deg <= 15) {
+      clock = "TWELVE";  
+    }
+  
+    return clock;
+  
+  } else {
+
+    return "SIX";
+  
+  }
+
+}
+
 
 setlistener("sim/signals/exit", writeDamageLog, 0, 0);
 

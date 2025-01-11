@@ -16,7 +16,8 @@ var MONO = 0;
 
 var overlapHorizontal = 1.5;
 
-var targetIndex = 0; #BVR_ASA
+# BVR_ASA
+var targetIndex = 0;
 
 
 #   █████  ██ ██████  ██████   ██████  ██████  ███    ██ ███████     ██████   █████  ██████   █████  ██████
