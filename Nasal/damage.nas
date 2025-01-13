@@ -432,7 +432,8 @@ var DamageRecipient =
                       # BVR_ASA
                       if(bearing != nil and bearing >= 0 and bearing <= 360) {
 
-                        var current_clock = degreesToClock(bearing);
+                        var heading = getprop("orientation/heading-deg");
+                        var current_clock = degreesToClock(bearing, heading);
                         if(last_missile_clock_pos != current_clock) {
                           var miss_mess = sprintf("Missile %s o'clock!", current_clock);
                           screen.log.write(miss_mess, 1.0, 0.2, 0.2);
@@ -1645,9 +1646,12 @@ var unitTest = func {
 }
 #unitTest();
 
-var degreesToClock = func (deg) {
+var degreesToClock = func (deg, head) {
   
   var clock = nil;
+
+  deg = deg + (360 - head);
+  if(deg > 360) deg = deg - 360;
 
   if(deg >= 15 and deg <= 45) {
     clock = "ONE";  
@@ -1682,7 +1686,7 @@ var degreesToClock = func (deg) {
   if(deg >= 315 and deg <= 345) {
     clock = "ELEVEN";  
   }
-  if(deg >= 345 and deg <= 15) {
+  if(deg >= 345 or deg <= 15) {
     clock = "TWELVE";  
   }
   
