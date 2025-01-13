@@ -1386,6 +1386,7 @@ var stopIncomingSound = func (clock) {
 }
 
 var nearby_explosion = func {
+  last_missile_clock_pos = "";
   setprop("damage/sounds/nearby-explode-on", 0);
   settimer(nearby_explosion_a, 0);
 }
