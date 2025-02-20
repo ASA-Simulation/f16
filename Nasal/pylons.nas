@@ -383,16 +383,16 @@ var cftListener = setlistener("sim/signals/fdm-initialized", detectCFT);
 
 # reload cannon only
 var cannon_load = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # refill tanks
 var refuel = func {
-	if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+	#if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
 		damage.damageLog.push("All tank refueled");
 		setprop("consumables/fuel/tank[0]/level-norm", 1);
 		setprop("consumables/fuel/tank[1]/level-norm", 1);
@@ -404,9 +404,9 @@ var refuel = func {
 		if (getprop("consumables/fuel/tank[7]/name") != "Not attached") setprop("consumables/fuel/tank[7]/level-norm", 1);
 		if (getprop("consumables/fuel/tank[8]/name") != "Not attached") setprop("consumables/fuel/tank[8]/level-norm", 1);
 		if (getprop("consumables/fuel/tank[9]/name") != "Not attached" and block >= 5) setprop("consumables/fuel/tank[9]/level-norm", 1);
-	} else {
-      screen.log.write(f16.msgC);
-    }
+	#} else {
+    #  screen.log.write(f16.msgC);
+    #}
 }
 
 # Default configuration
