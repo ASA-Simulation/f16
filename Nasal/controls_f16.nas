@@ -106,9 +106,9 @@ var chute_release = func {
 }
 
 var pause = func {
-    if (getprop("payload/armament/msg")) {
-        screen.log.write("Please do not pause while in combat over MP!");
-    } else {
+    #if (getprop("payload/armament/msg")) {
+    #    screen.log.write("Please do not pause while in combat over MP!");
+    #} else {
         setprop("/sim/freeze/master", !getprop("/sim/freeze/master"));
         setprop("/sim/freeze/clock", !getprop("/sim/freeze/clock"));
         if (getprop("/sim/freeze/master")) {
@@ -116,7 +116,7 @@ var pause = func {
         } else {
             screen.log.write("Sim is resumed");
         }
-    }
+    #}
 }
 
 var cycleW = props.globals.getNode("/controls/armament/weapon-selected", 1);

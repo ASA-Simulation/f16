@@ -343,9 +343,9 @@ var medium_fast = {
                 call(func{fgcommand('dialog-close', props.Node.new({"dialog-name": "system-failures"}))},nil,var err2 = []);
                 call(func{fgcommand('dialog-close', props.Node.new({"dialog-name": "instrument-failures"}))},nil,var err2 = []);
             }
-            setprop("sim/freeze/fuel",0);
-            setprop("/sim/freeze/master", 0);
-            setprop("/sim/freeze/clock", 0);
+            #setprop("sim/freeze/fuel",0);
+            #setprop("/sim/freeze/master", 0);
+            #setprop("/sim/freeze/clock", 0);
             setprop("/sim/speed-up", 1);
             setprop("/gui/map/draw-traffic", 0);
             setprop("/sim/gui/dialogs/map-canvas/draw-TFC", 0);
