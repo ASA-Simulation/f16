@@ -77,6 +77,14 @@ var replay = func {
 
 var radar_standby = func {
     # BVR_ASA
+    if(getprop("instrumentation/radar/radar-enable") == 0) {
+        setprop("instrumentation/radar/radar-enable", 0);
+        setprop("instrumentation/radar/radar-enable-std", 1);
+    }
+    if(getprop("instrumentation/radar/radar-enable") == 1) {
+        setprop("instrumentation/radar/radar-enable", 1);
+        setprop("instrumentation/radar/radar-enable-std", 0);
+    }
     screen.log.write("Radar "~(getprop("instrumentation/radar/radar-enable")==0?"SILENT":"ACTIVE")~" "~(getprop("instrumentation/radar/radar2-range")~"nm"), 0.5, 0.5, 1);
 }
 
