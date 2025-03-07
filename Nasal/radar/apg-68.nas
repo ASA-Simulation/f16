@@ -18,7 +18,7 @@ var overlapHorizontal = 1.5;
 
 # BVR_ASA
 var targetIndex = 0;
-
+var targetList = [];
 
 #   █████  ██ ██████  ██████   ██████  ██████  ███    ██ ███████     ██████   █████  ██████   █████  ██████
 #  ██   ██ ██ ██   ██ ██   ██ ██    ██ ██   ██ ████   ██ ██          ██   ██ ██   ██ ██   ██ ██   ██ ██   ██
@@ -896,43 +896,28 @@ var RadarMode = {
 	},
 	designatePriority: func (contact) {},
 	cycleDesignate: func {
+	
+		# BVR_ASA
+		update_array();
 
-		#BVR_ASA
-
-		me.targetList = getCompleteList();
-		me.target_quantity = size(me.targetList);
-
-		if (!me.target_quantity or me.target_quantity == 0) {
-			me.priorityTarget = nil;
-	      	#screen.log.write("A "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
-			return;
-		}
-
-		if(me.target_quantity == 1) {
-			targetIndex = 0;
-			me.priorityTarget = me.targetList[targetIndex];
-	      	#screen.log.write("B "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
-			var prio = radar_system.apg68Radar.getPriorityTarget();
-        	radar_system.apg68Radar.setRootMode(1, prio);			
-			return;
-		}
+		var gcl = getCompleteList();
 		
-		if(me.target_quantity > 1) {
+		if(targetIndex < (size(targetList)-1)) {
 			targetIndex = targetIndex + 1;
-			if(targetIndex > (me.target_quantity - 1)) {
-				targetIndex = 0;
-				me.priorityTarget = me.targetList[targetIndex];
-		      	#screen.log.write("C "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
-				var prio = radar_system.apg68Radar.getPriorityTarget();
-        		radar_system.apg68Radar.setRootMode(1, prio);	
-				return;
-			} else {
-				me.priorityTarget = me.targetList[targetIndex];
-		      	#screen.log.write("D "~me.target_quantity~" "~targetIndex~" "~me.priorityTarget, 0.5, 0.5, 1);
-				var prio = radar_system.apg68Radar.getPriorityTarget();
-        		radar_system.apg68Radar.setRootMode(1, prio);	
-				return;
-			}l
+		} else {
+			targetIndex = 0;
+		}
+		var target_callsign = targetList[targetIndex];
+
+		#print("Searching: ", target_callsign);
+
+		for(var i = 0; i < size(gcl); i += 1) {
+			if (string.match(gcl[i].get_Callsign(), target_callsign)) {
+				#print("Locked on: ", target_callsign);	
+				me.priorityTarget = gcl[i];
+        		radar_system.apg68Radar.setRootMode(1, me.priorityTarget);		
+				return;	
+			}
 		}
 
 	},
@@ -3633,7 +3618,29 @@ var getCompleteList = func {
 	return baser.vector_aicontacts_last;
 }
 
+# BVR_ASA
+var add_if_not_exists = func(new_callsgn) {
+    foreach (item; targetList) {
+        if (item == new_callsgn) {
+            return; # A string já existe no array, então sai da função
+        }
+    }
+    if(string.match(new_callsgn, "*@*")) {
+	    print("Added: ", new_callsgn);
+		append(targetList, new_callsgn); # Adiciona a string se não foi encontrada
+	}
+};
 
+# BVR_ASA
+var update_array = func() { 
+	var gcl = getCompleteList();
+	#print("Size: ", size(gcl));
+	foreach (cs; gcl) {
+	    #print("Callsign: ", cs.get_Callsign());
+		add_if_not_exists(cs.get_Callsign());
+	}
+	
+};
 
 
 
