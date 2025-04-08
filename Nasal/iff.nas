@@ -63,7 +63,8 @@ var iff_hash = {
 			me.int_systime = int(systime());
 			me.update_time = int(math.mod(me.int_systime,iff_refresh_rate));
 			me.time = me.int_systime - me.update_time;
-			node.hash.setValue(_calculate_hash(me.time, node.callsign.getValue(), node.channel.getValue()));
+			#node.hash.setValue(_calculate_hash(me.time, node.callsign.getValue(), node.channel.getValue()));
+			node.hash.setValue(node.channel.getValue())
 		} else {
 			me.timer.stop();
 			node.hash.setValue("");
@@ -88,18 +89,25 @@ var interrogate = func(tgt) {
 	#print("hash1 " ~ hash1);
 	#print("hash2 " ~ hash2);
 	#print("check_hash " ~ check_hash);
-	if ( hash1 == check_hash or hash2 == check_hash ) {
+	print("tgt: "~tgt.getNode("sim/multiplay/generic/string["~iff_mp_string~"]").getValue());
+	print("node: "~node.channel.getValue());
+	if (tgt.getNode("sim/multiplay/generic/string["~iff_mp_string~"]").getValue() == node.channel.getValue()) {
 		return 1;
-	} else {
-		return 0;
 	}
+	return 0;
+
+	# if ( hash1 == check_hash or hash2 == check_hash ) {
+	# 	return 1;
+	# } else {
+	# 	return 0;
+	# }
 }
 
 var _calculate_hash = func(time, callsign, channel) {
-	#print("time|" ~ time ~ "|");
-	#print("callsign|" ~ callsign ~ "|");
-	#print("channel|" ~ channel ~ "|");
-	#print("hash|"~left(md5(time ~ callsign ~ channel ~ iff_unique_id),iff_hash_length)~"|");
+	print("time|" ~ time ~ "|");
+	print("callsign|" ~ callsign ~ "|");
+	print("channel|" ~ channel ~ "|");
+	print("hash|"~left(md5(time ~ callsign ~ channel ~ iff_unique_id),iff_hash_length)~"|");
 	callsign = size(callsign) < 8?callsign:left(callsign, 7);
 	return left(md5(time ~ callsign ~ channel ~ iff_unique_id),iff_hash_length);
 }
