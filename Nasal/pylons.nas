@@ -411,7 +411,7 @@ var refuel = func {
 
 # Default configuration
 var default = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Default loadout mounted");
         pylon1.loadSet(pylonSets.dumb1WT);# F16 never has nothing on wingtips unless its fired off, its aerodynamics is designed to work better with something there.
         pylon2.loadSet(pylonSets.empty);
@@ -430,14 +430,14 @@ var default = func {
         	pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Clean configuration
 var clean = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Clean loadout mounted");
         pylon1.loadSet(pylonSets.empty);
         pylon2.loadSet(pylonSets.empty);
@@ -456,14 +456,14 @@ var clean = func {
         	pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Airshow configuration (Smokewinder white)
 var airshow = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Airshow loadout mounted");
         pylon1.loadSet(pylonSets.smokeWL);
         pylon2.loadSet(pylonSets.empty);
@@ -482,9 +482,9 @@ var airshow = func {
         	pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -493,7 +493,7 @@ var airshow = func {
 
 # CAP (AIM-9, AIM-120)
 var a2a_cap = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Combat air patrol loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -507,14 +507,14 @@ var a2a_cap = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAP (AIM-9, AIM-120, 2 bags)
 var a2a_capext = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Combat air patrol (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -528,9 +528,9 @@ var a2a_capext = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Air Superiority (AIM-120, 1 bag)
@@ -598,7 +598,7 @@ var a2a_superer = func {
 
 # DCA (AIM-9, AIM-120)
 var a2a_dca = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Defensive counter-air loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -612,14 +612,14 @@ var a2a_dca = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Ferry configuration 1 (3 bags, TRVL)
 var ferry1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Ferry (3 bags) loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.empty);
@@ -638,14 +638,14 @@ var ferry1 = func {
         	pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Ferry configuration 2 (2 bags XL, TRVL)
 var ferry2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Ferry (2 bags XL) loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.empty);
@@ -664,9 +664,9 @@ var ferry2 = func {
         	pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -675,7 +675,7 @@ var ferry2 = func {
 
 # CAS (1x AGM-65D, 2 bags)
 var a2g_caslt = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support (light) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -689,14 +689,14 @@ var a2g_caslt = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAS (3x AGM-65B, 2 bags)
 var a2g_cas = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support (heavy) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -710,14 +710,14 @@ var a2g_cas = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided 1: (MK-82)
 var a2g_mk1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (light) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -731,14 +731,14 @@ var a2g_mk1 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided Retarded: (MK-82AIR)
 var a2g_mkair = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided retarded loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -752,14 +752,14 @@ var a2g_mkair = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided 2 (MK-84)
 var a2g_mk2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (heavy) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -773,14 +773,14 @@ var a2g_mk2 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G CEM (CBU-87)
 var a2g_cem = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Cluster CEM loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -794,14 +794,14 @@ var a2g_cem = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Hydra 70 (LAU-68)
 var a2g_hyd70 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G M151 rockets loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -816,14 +816,14 @@ var a2g_hyd70 = func {
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
         f16.reloadHydras();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LGB Strike 1 (GBU-12)
 var a2g_lgb1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB light loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -837,14 +837,14 @@ var a2g_lgb1 = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LBG Strike 2 (GBU-24)
 var a2g_lgb2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB heavy loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -858,14 +858,14 @@ var a2g_lgb2 = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # SEAD "Wild Weasel" (AGM-88, 184 ECM pod)
 var a2g_sead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G SEAD Wild Weasel loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -884,14 +884,14 @@ var a2g_sead = func {
             pylon11.loadSet(pylonSets.podHarm);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # SEAD/DEAD (GBU-12, ECM, HTS, 2 bags)
 var a2g_dead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G DEAD LGB loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -910,14 +910,14 @@ var a2g_dead = func {
             pylon11.loadSet(pylonSets.podHarm);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G GPS Strike (GBU-31)
 var a2g_gps = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G GPS (JDAM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -931,14 +931,14 @@ var a2g_gps = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LGB + GPS Strike (GBU-12, GBU-31)
 var a2g_lgbgps = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB + GPS heavy loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -952,14 +952,14 @@ var a2g_lgbgps = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LGB + GPS Strike (GBU-12, GBU-54)
 var a2g_lgbgps2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB + GPS light loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -973,14 +973,14 @@ var a2g_lgbgps2 = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship ER (AGM-84D)
 var a2s_antiship = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -999,14 +999,14 @@ var a2s_antiship = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Strategic Unguided (B61-7)
 var a2g_strat = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Strategic unguided loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1020,9 +1020,9 @@ var a2g_strat = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -1031,7 +1031,7 @@ var a2g_strat = func {
 
 # Air Defense (AIM-9)
 var b10_a2a_adf = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air defense loadout mounted");
         pylon1.loadSet(pylonSets.aim9lWT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1045,14 +1045,14 @@ var b10_a2a_adf = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Air Defense (AIM-9, 2 bags)
 var b10_a2a_adfer = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air defense (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim9lWT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1066,14 +1066,14 @@ var b10_a2a_adfer = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Strike Light (MK-82, AIM-9, 1 bag)
 var b10_a2g_strike1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (light) loadout mounted");
         pylon1.loadSet(pylonSets.aim9lWT);
         pylon2.loadSet(pylonSets.empty);
@@ -1087,14 +1087,14 @@ var b10_a2g_strike1 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Strike Retarded (MK-82AIR, AIM-9, 1 bag)
 var b10_a2g_strikeair = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided retarded loadout mounted");
         pylon1.loadSet(pylonSets.aim9lWT);
         pylon2.loadSet(pylonSets.empty);
@@ -1108,14 +1108,14 @@ var b10_a2g_strikeair = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Strike Heavy (MK-84, AIM-9, 1 bag)
 var b10_a2g_strike2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (heavy) loadout mounted");
         pylon1.loadSet(pylonSets.aim9lWT);
         pylon2.loadSet(pylonSets.empty);
@@ -1129,14 +1129,14 @@ var b10_a2g_strike2 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/A training
 var b10_train_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to air training loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.empty);
@@ -1150,14 +1150,14 @@ var b10_train_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G training (2 bags)
 var b10_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.empty);
@@ -1171,9 +1171,9 @@ var b10_train_ag = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -1182,7 +1182,7 @@ var b10_train_ag = func {
 
 # Air Defense (AIM-9, AIM-7)
 var b20_a2a_adf = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air defense loadout mounted");
         pylon1.loadSet(pylonSets.aim9mWT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1196,14 +1196,14 @@ var b20_a2a_adf = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Air Defense (AIM-9, AIM-7)
 var b20_a2a_adfer = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("Air defense (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim9mWT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1217,14 +1217,14 @@ var b20_a2a_adfer = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # QRA (AIM-9, AIM-120, 2 bags)
 var b20_a2a_qra = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Quick reaction alert loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1238,14 +1238,14 @@ var b20_a2a_qra = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G SFW (CBU-105)
 var b20_a2g_sfw = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("A/G Cluster SFW (WCMD) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1259,14 +1259,14 @@ var b20_a2g_sfw = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LGB + GPS Strike (GBU-12, GBU-54)
 var b20_a2g_lgbgps = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB + GPS light loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1280,14 +1280,14 @@ var b20_a2g_lgbgps = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # SEAD (AGM-88, 184 ECM pod)
 var b20_a2g_sead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G SEAD loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1301,14 +1301,14 @@ var b20_a2g_sead = func {
         pylon10.loadSet(pylonSets.podHarm);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # DEAD (CBU-105, ECM, HTS, 2 bags)
 var b20_a2g_dead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("A/G DEAD SFW loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1322,14 +1322,14 @@ var b20_a2g_dead = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship (AGM-84)
 var b20_a2s_antiship = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1343,14 +1343,14 @@ var b20_a2s_antiship = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship (AGM-84, 184 ECM pod)
 var b20_a2s_antishiper = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1364,14 +1364,14 @@ var b20_a2s_antishiper = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship (AGM-119)
 var a2s_antiship2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship Penguin loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1385,14 +1385,14 @@ var a2s_antiship2 = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship (AGM-119)
 var a2s_antiship2er = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("A/G Anti-ship Penguin (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1406,14 +1406,14 @@ var a2s_antiship2er = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 1
 var b20_train_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to air training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1427,14 +1427,14 @@ var b20_train_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 2
 var b20_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1448,9 +1448,9 @@ var b20_train_ag = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -1459,7 +1459,7 @@ var b20_train_ag = func {
 
 # SEAD "Wild Weasel" (AGM-88, 131 ECM pod)
 var b30_a2g_sead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G SEAD loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1473,14 +1473,14 @@ var b30_a2g_sead = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # SEAD/DEAD (CBU-87, ECM, 2 bags)
 var b30_a2g_dead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G DEAD CEM loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1494,13 +1494,13 @@ var b30_a2g_dead = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 var b30_a2s_antiship = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1514,14 +1514,14 @@ var b30_a2s_antiship = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 1
 var b30_train_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to air training loadout mounted");
         pylon1.loadSet(pylonSets.dumb2WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1535,14 +1535,14 @@ var b30_train_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration
 var b30_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1556,14 +1556,14 @@ var b30_train_ag = func {
         pylon10.loadSet(pylonSets.podLTgp);
         pylon11.loadSet(pylonSets.podLNav);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/A Aggressor 1
 var b30_agrs1_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Aggressor training loadout mounted");
         pylon1.loadSet(pylonSets.dumb1WT);
         pylon2.loadSet(pylonSets.empty);
@@ -1577,14 +1577,14 @@ var b30_agrs1_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/A Aggressor 2
 var b30_agrs2_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Aggressor training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -1598,14 +1598,14 @@ var b30_agrs2_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/A Aggressor 3
 var b30_agrs3_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Aggressor training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -1619,9 +1619,9 @@ var b30_agrs3_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 
@@ -1631,7 +1631,7 @@ var b30_agrs3_aa = func {
 
 # CAP (AIM-9, AIM-120, 2 bags)
 var b40_a2a_capext = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Combat air patrol (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1650,9 +1650,9 @@ var b40_a2a_capext = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Air Superiority (AIM-120, 2 bags)
@@ -1683,7 +1683,7 @@ var b40_a2a_superer = func {
 
 # Air Policing (AIM-9, AIM-120, 2 bags)
 var b50_a2a_ap = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air policing loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1702,14 +1702,14 @@ var b50_a2a_ap = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G SFW (CBU-105)
 var b40_a2g_sfw = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Cluster SFW (WCMD) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1723,14 +1723,14 @@ var b40_a2g_sfw = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G GPS Strike (GBU-54)
 var b40_a2g_gpslsr = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G GPS (L-JDAM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1749,14 +1749,14 @@ var b40_a2g_gpslsr = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Combat Patrol (AIM-120, AIM-9, GBU-54, 2 bags)
 var b50_a2g_cp = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("Combat Patrol loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1775,15 +1775,15 @@ var b50_a2g_cp = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 
 # SEAD "Wild Weasel" (AGM-88, 131 ECM pod)
 var b50_a2g_sead1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("A/G SEAD Wild Weasel loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1797,13 +1797,13 @@ var b50_a2g_sead1 = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 var b50_a2g_sead2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G SEAD dual loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1817,14 +1817,14 @@ var b50_a2g_sead2 = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # SEAD/DEAD (GBU-54, ECM, HTS, 2 bags)
 var b50_a2g_sdead = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G SEAD/DEAD loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1838,14 +1838,14 @@ var b50_a2g_sdead = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # DEAD (CBU-105, ECM, HTS, 2 bags)
 var b50_a2g_dead1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G DEAD SFW loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1859,14 +1859,14 @@ var b50_a2g_dead1 = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # DEAD (GBU-12, ECM, HTS, 2 bags)
 var b50_a2g_dead2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G DEAD LGB loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1880,14 +1880,14 @@ var b50_a2g_dead2 = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAS (1x AGM-65D, 2 bags)
 var b40_a2g_caslt = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support (light) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9l);
@@ -1901,14 +1901,14 @@ var b40_a2g_caslt = func {
         pylon10.loadSet(pylonSets.podLite);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAS Mix (GBU-54, Hydra, 2 bags)
 var b40_a2g_casmix = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support (mixed) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.empty);
@@ -1928,14 +1928,14 @@ var b40_a2g_casmix = func {
         }
         f16.reloadCannon();
         f16.reloadHydras();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAS Dual (GBU-12, AGM-65D)
 var b40_a2g_casduo = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support (dual) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.empty);
@@ -1949,14 +1949,14 @@ var b40_a2g_casduo = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Stand-off Strike mode 1 (AGM-154A)
 var a2g_jsow = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Stand-off (JSOW) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -1970,14 +1970,14 @@ var a2g_jsow = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Stand-off Strike mode 2 (AGM-158)
 var b40_a2g_jassm = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Stand-off (JASSM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -1991,14 +1991,14 @@ var b40_a2g_jassm = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Stand-off Strike mode 2 (AGM-158)
 var b50_a2g_jassm = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("A/G Stand-off (JASSM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2012,14 +2012,14 @@ var b50_a2g_jassm = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Tactical Guided Strike (B61-12)
 var b50_a2g_tact = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Tactical test and evaluation loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2033,14 +2033,14 @@ var b50_a2g_tact = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 1
 var b40_train_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to air training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2059,14 +2059,14 @@ var b40_train_aa = func {
             pylon11.loadSet(pylonSets.empty);
         }
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Aggressor training configuration
 var b40_train_agrs = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Aggressor training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2080,14 +2080,14 @@ var b40_train_agrs = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 2
 var b40_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2101,14 +2101,14 @@ var b40_train_ag = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 2
 var b50_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2122,14 +2122,14 @@ var b50_train_ag = func {
         pylon10.loadSet(pylonSets.podSAtp);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Legion Pod Test & Evaluation
 var b40_testev = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
         damage.damageLog.push("IRST test and evaluation loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -2143,14 +2143,14 @@ var b40_testev = func {
         pylon10.loadSet(pylonSets.podIrst);
         pylon11.loadSet(pylonSets.empty);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Legion Pod Test & Evaluation
 var b50_testev = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("IRST test and evaluation loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.dumb1);
@@ -2164,9 +2164,9 @@ var b50_testev = func {
         pylon10.loadSet(pylonSets.podIrst);
         pylon11.loadSet(pylonSets.podHarm);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 ############################################
@@ -2175,7 +2175,7 @@ var b50_testev = func {
 
 # Peacetime training configuration 1
 var b60_train_aa = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to air training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2189,14 +2189,14 @@ var b60_train_aa = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Peacetime training configuration 2
 var b60_train_ag = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Air to ground training loadout mounted");
         pylon1.loadSet(pylonSets.dumb3WT);
         pylon2.loadSet(pylonSets.podACMI);
@@ -2210,14 +2210,14 @@ var b60_train_ag = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAP (AIM-9, AIM-120)
 var b60_a2a_cap = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Combat air patrol loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -2231,14 +2231,14 @@ var b60_a2a_cap = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAP (AIM-9, AIM-120, 2 bags)
 var b60_a2a_capext = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Combat air patrol (ext. range) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim120);
@@ -2252,9 +2252,9 @@ var b60_a2a_capext = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # Air Superiority (AIM-120)
@@ -2322,7 +2322,7 @@ var b60_a2a_superer2 = func {
 
 # DCA (AIM-9, AIM-120)
 var b60_a2a_dca = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Defensive counter-air loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2336,14 +2336,14 @@ var b60_a2a_dca = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided 1: (MK-82)
 var b60_a2g_mk1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (light) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2357,14 +2357,14 @@ var b60_a2g_mk1 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided 2 (MK-84)
 var b60_a2g_mk2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided (heavy) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2378,14 +2378,14 @@ var b60_a2g_mk2 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Unguided Retarded: (MK-82AIR)
 var b60_a2g_mkair = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Unguided retarded loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2399,14 +2399,14 @@ var b60_a2g_mkair = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G CEM (CBU-87)
 var b60_a2g_cem = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Cluster CEM loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2420,14 +2420,14 @@ var b60_a2g_cem = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LGB Strike 1 (GBU-12)
 var b60_a2g_lgb1 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB light loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2441,14 +2441,14 @@ var b60_a2g_lgb1 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G LBG Strike 2 (GBU-24)
 var b60_a2g_lgb2 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G LGB heavy loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2462,14 +2462,14 @@ var b60_a2g_lgb2 = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G GPS Strike (GBU-31)
 var b60_a2g_gps = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G GPS (JDAM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2483,14 +2483,14 @@ var b60_a2g_gps = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G GPS Strike (GBU-54)
 var b60_a2g_gpslsr = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G GPS (L-JDAM) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2504,13 +2504,13 @@ var b60_a2g_gpslsr = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 var b60_a2g_sfw = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Cluster SFW (WCMD) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2524,14 +2524,14 @@ var b60_a2g_sfw = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # CAS (1x AGM-65D, 2 bags)
 var b60_a2g_cas = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("Close air support loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2545,14 +2545,14 @@ var b60_a2g_cas = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Hydra 70 (LAU-68)
 var b60_a2g_hyd70 = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G M151 rockets loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2567,14 +2567,14 @@ var b60_a2g_hyd70 = func {
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
         f16.reloadHydras();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/S Anti-Ship ER (AGM-84D)
 var b60_a2s_antiship = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Anti-ship loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2588,14 +2588,14 @@ var b60_a2s_antiship = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 # A/G Stand-off Strike mode 1 (AGM-154A)
 var b60_a2g_jsow = func {
-    if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
     	damage.damageLog.push("A/G Stand-off (JSOW) loadout mounted");
         pylon1.loadSet(pylonSets.aim120WT);
         pylon2.loadSet(pylonSets.aim9m);
@@ -2609,9 +2609,9 @@ var b60_a2g_jsow = func {
         pylon10.loadSet(pylonSets.empty);
         pylon11.loadSet(pylonSets.podIfts);
         f16.reloadCannon();
-    } else {
-      screen.log.write(f16.msgB);
-    }
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
 }
 
 var bore_loop = func {
