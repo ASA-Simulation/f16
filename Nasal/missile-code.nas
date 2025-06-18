@@ -4437,6 +4437,7 @@ var AIM = {
 		if(getprop("payload/armament/msg")) {
 			lockMutex(mutexTimer);
 			print("notifyInFlight explode");
+			print("Explode: "~me.unique_id);
 			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.coord.lat(), me.coord.lon(), me.coord.alt(),0,0,me.typeID,me.type,me.unique_id,0,"", me.hdg, me.pitch, 0, 0], -1]);
 			unlockMutex(mutexTimer);
 		}
@@ -4469,14 +4470,51 @@ var AIM = {
 			}
 			if (phrase != nil) {
 				me.printStats("%s  time %.1f", phrase, me.life_time);
-				if(getprop("payload/armament/msg") and hitPrimaryTarget and wh_mass > 0){
+				print("armamanet/msg: hitPrimaryTarget: "~hitPrimaryTarget~" wh_mass:"~wh_mass);
+
+				# BVR_ASA - Bomb Hit ground targets
+				if(getprop("payload/armament/msg") and hitPrimaryTarget and hitGround == 0 and wh_mass > 0){
+
+					print(">>>>>>>>>>>>>> Missile hit target!!!");
+					print("coordinates: "~coordinates.lat()~" "~coordinates.lon()~" "~coordinates.alt());
+					print("range: "~range);
+					print("me.callsign: "~me.callsign);
+					print("reason: "~reason);
+					print("me.typeID: "~me.typeID);
+					print("me.typeLong: "~me.typeLong);
+					print("me.unique_id: "~me.unique_id);
+
 					lockMutex(mutexTimer);
 					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
+
+				} else if(getprop("payload/armament/msg") and hitGround == 1 and wh_mass > 0 and !string.match(me.typeLong, "AIM*")){
+
+					print(">>>>>>>>>>>>>> Bomb hit ground!!!");
+					print("coordinates: "~coordinates.lat()~" "~coordinates.lon()~" "~coordinates.alt());
+					print("me.callsign: "~me.callsign);
+					print("reason: "~reason);
+					print("me.typeID: "~me.typeID);
+					print("me.typeLong: "~me.typeLong);
+					print("me.unique_id: "~me.unique_id);
+
+					lockMutex(mutexTimer);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt(),0,me.callsign,coordinates.course_to(coordinates),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					unlockMutex(mutexTimer);
+
                 } else {
+
+					print(">>>>>>>>>>>>>> Missile lost...");
+					print("me.callsign: "~me.callsign);
+					print("reason: "~reason);
+					print("me.typeID: "~me.typeID);
+					print("me.typeLong: "~me.typeLong);
+					print("me.unique_id: "~me.unique_id);
+
 	                lockMutex(mutexTimer);
 	                appendTimer(AIM.timerQueue, [AIM, AIM.log, [phrase], 0]);
 	                unlockMutex(mutexTimer);
+
 	            }
 			}
 			if (me.multiHit and !me.multiExplosion(coordinates, event, wh_mass) and me.Tgt != nil and me.Tgt.isVirtual()) {
@@ -5502,7 +5540,7 @@ var AIM = {
 			if (info == nil) {
 				me.explode_water_prop.setBoolValue(0);
 			} elsif (info[1] == nil) {
-				#print ("Building hit!");
+				print ("Building hit!");
 			} elsif (!info[1].solid) {
 			 	me.explode_water_prop.setBoolValue(1);
 			} else {
@@ -5538,9 +5576,9 @@ var AIM = {
 		        if (me.weight_whead_lbm < 850 and (me.target_sea or me.target_gnd)) {
 		          	crater_model = getprop("payload/armament/models") ~ "crater_small.xml";
 		          	siz = 0;
-					#print("small crater");
+					print("small crater");
 		        } elsif (me.target_sea or me.target_gnd) {
-					#print("big crater");
+					print("big crater");
 					siz = 1;
 		          	crater_model = getprop("payload/armament/models") ~ "crater_big.xml";
 		        }

@@ -25,6 +25,7 @@ var ArmamentNotification =
         new_class.RemoteCallsign = ""; # associated remote callsign.
         new_class.UniqueIdentity = _unique;
 
+        print("ArmamentNotification 19: "~_unique~", "~_kind~", "~_secondary_kind);
 
         new_class.bridgeProperties = func
         {
@@ -92,6 +93,9 @@ var ArmamentInFlightNotification =
         new_class.RemoteCallsign = ""; # associated remote callsign.
         new_class.Flags = 0; # 8 bits for whatever.
         new_class.UniqueIdentity = _unique;
+
+        print("ArmamentInFlightNotification 21: "~_unique~", "~_kind~", "~_secondary_kind);
+
 
         new_class.isValid = func {
             var valid = "";
@@ -213,6 +217,8 @@ var StaticNotification =
         new_class.Flags1 = 0;                          # 7 bits for whatever.
         new_class.Flags2 = 0;                          # 7 bits for whatever.        
 
+        print("StaticNotification 25: "~_unique~", "~_kind~", "~_secondary_kind);
+
         new_class.GetBridgeMessageNotificationTypeKey = func {
             return new_class.NotificationType~"."~new_class.Ident~"."~new_class.UniqueIdentity;
         };
@@ -276,6 +282,8 @@ var ObjectInFlightNotification =
         new_class.IsDistinct = 1;
         new_class.Callsign = nil; # populated automatically by the incoming bridge when routed
         new_class.UniqueIdentity = _unique;
+
+        print("ObjectInFlightNotification 22: "~_unique~", "~_kind~", "~_secondary_kind);
 
         new_class.GetBridgeMessageNotificationTypeKey = func {
             return new_class.NotificationType~"."~new_class.Ident~"."~new_class.UniqueIndex;
