@@ -2667,3 +2667,69 @@ var bore_loop_timer = maketimer(0.1, bore_loop);
 if (fcs!=nil) {
     bore_loop_timer.start();
 }
+
+
+#BVR_ASA
+
+# A/G 4 x AIM-120 + 6 x MK82
+var a2g_asaMK82 = func {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    	damage.damageLog.push("ASA 6 x MK82");
+        pylon1.loadSet(pylonSets.aim120WT);
+        pylon2.loadSet(pylonSets.empty);
+        pylon3.loadSet(pylonSets.aim120);
+        pylon4.loadSet(pylonSets.m82);
+        pylon5.loadSet(pylonSets.fuel30);
+        pylon6.loadSet(pylonSets.m82);
+        pylon7.loadSet(pylonSets.aim120);
+        pylon8.loadSet(pylonSets.empty);
+        pylon9.loadSet(pylonSets.aim120WT);
+        pylon10.loadSet(pylonSets.empty);
+        pylon11.loadSet(pylonSets.empty);
+        f16.reloadCannon();
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
+}
+
+# A/G 4 x AIM-120 + 2 x MK84
+var a2g_asaMK84 = func {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    	damage.damageLog.push("ASA 2 x MK84");
+        pylon1.loadSet(pylonSets.aim120WT);
+        pylon2.loadSet(pylonSets.empty);
+        pylon3.loadSet(pylonSets.aim120);
+        pylon4.loadSet(pylonSets.m84);
+        pylon5.loadSet(pylonSets.fuel30);
+        pylon6.loadSet(pylonSets.m84);
+        pylon7.loadSet(pylonSets.aim120);
+        pylon8.loadSet(pylonSets.empty);
+        pylon9.loadSet(pylonSets.aim120WT);
+        pylon10.loadSet(pylonSets.empty);
+        pylon11.loadSet(pylonSets.empty);
+        f16.reloadCannon();
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
+}
+
+# A/G 4 x AIM-120 + 2 x GBU31
+var a2g_asaGBU31 = func {
+    #if (fcs != nil and (getprop("payload/armament/msg") == 0 or getprop("fdm/jsbsim/gear/unit[0]/WOW"))) {
+    	damage.damageLog.push("ASA 2 x GBU31");
+        pylon1.loadSet(pylonSets.aim120WT);
+        pylon2.loadSet(pylonSets.empty);
+        pylon3.loadSet(pylonSets.aim120);
+        pylon4.loadSet(pylonSets.g31);
+        pylon5.loadSet(pylonSets.fuel30);
+        pylon6.loadSet(pylonSets.g31);
+        pylon7.loadSet(pylonSets.aim120);
+        pylon8.loadSet(pylonSets.empty);
+        pylon9.loadSet(pylonSets.aim120WT);
+        pylon10.loadSet(pylonSets.podLite);
+        pylon11.loadSet(pylonSets.empty);
+        f16.reloadCannon();
+    #} else {
+    #  screen.log.write(f16.msgB);
+    #}
+}

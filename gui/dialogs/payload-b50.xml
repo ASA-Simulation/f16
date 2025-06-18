@@ -97,6 +97,66 @@
 
     <group>
         <layout>table</layout>
+
+        <!-- #BVR_ASA - Presets de Payload do ASA -->
+
+        <button>
+            <pref-width>225</pref-width><pref-height>23</pref-height>
+            <row>0</row>
+            <col>0</col>
+            <legend>ASA - 6 x AIM-120</legend>
+            <binding>
+                <command>nasal</command>
+                <script>pylons.a2a_super();</script>
+            </binding>
+        </button>
+
+        <button>
+            <pref-width>225</pref-width><pref-height>23</pref-height>
+            <row>2</row>
+            <col>0</col>
+            <legend>ASA - 4 x AIM-120 + 6 x MK82</legend>
+            <binding>
+                <command>nasal</command>
+                <script>pylons.a2g_asaMK82();</script>
+            </binding>
+        </button>
+
+        <hrule>
+            <row>1</row>
+            <col>0</col>
+            <colspan>6</colspan>
+        </hrule>
+
+        <button>
+            <pref-width>225</pref-width><pref-height>23</pref-height>
+            <row>4</row>
+            <col>0</col>
+            <legend>ASA - 4 x AIM-120 + 2 x MK84</legend>
+            <binding>
+                <command>nasal</command>
+                <script>pylons.a2g_asaMK84();</script>
+            </binding>
+        </button>
+
+        <hrule>
+            <row>3</row>
+            <col>0</col>
+            <colspan>6</colspan>
+        </hrule>
+
+        <button>
+            <pref-width>225</pref-width><pref-height>23</pref-height>
+            <row>6</row>
+            <col>0</col>
+            <legend>ASA - 4 x AIM-120 + 2 x GBU31</legend>
+            <binding>
+                <command>nasal</command>
+                <script>pylons.a2g_asaGBU31();</script>
+            </binding>
+        </button>
+
+        <!--
         <button>
             <pref-width>225</pref-width><pref-height>23</pref-height>
             <row>0</row>
@@ -152,6 +212,7 @@
                 <script>pylons.a2a_super();</script>
             </binding>
         </button>
+        -->
 
         <hrule>
             <row>5</row>
