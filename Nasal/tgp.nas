@@ -413,6 +413,12 @@ var fast_loop = func {
             var to_secs = (1.0-getprop("/f16/avionics/power-right-hdpt-warm"))*180;
             var mins = int(to_secs/60);
             var secs = to_secs-mins*60;
+            #----------
+            #BVR_ASA
+            mins = 0;
+            secs = 0;
+            setprop("f16/avionics/power-right-hdpt-warm", 1);
+            #----------
             var ttxt = sprintf(" %1d:%02d ", mins, secs);
             midl.setText("NOT TIMED OUT");
             bott.setText(ttxt);

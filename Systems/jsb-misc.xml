@@ -282,7 +282,10 @@
                 </setting>
                 <setting>
                     <position>  1.0 </position>
+                    <!-- #BVR_ASA
                     <time>    180.0 </time>
+                    -->
+                    <time>    0.0 </time>
                 </setting>
             </traverse>
             <clipto>
