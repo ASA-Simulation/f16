@@ -1055,6 +1055,115 @@ var AIM = {
         return me.ccrp_distCCRP;
 	},
 
+	getCCRPwithTarget: func (maxFallTime_sec, timeStep, target) {
+
+		#print("maxFallTime_sec:"~maxFallTime_sec);
+		#print("timeStep:"~timeStep);
+		#print("target: LAT:"~me.Tgt.get_Coord().lat()~" LON:"~me.Tgt.get_Coord().lon()~" ALT:"~me.Tgt.get_Coord().alt());
+		
+		# returns distance in meters to ideal release time.
+		#
+		# maxFallTime_sec: maximum allowed predicted falltime. Higher value will make method take more CPU time.
+		# timeStep: Fidelity of prediction. Lower value will increase CPU consumption.
+		#
+		# Assumptions:
+		#  Ordnance do not have propulsion
+		#  Ordnance has very limited steering
+		#print("me.status:"~me.status);
+		#print("MISSILE_LOCK:"~MISSILE_LOCK);
+		
+		#if (me.status != MISSILE_LOCK or me.Tgt == nil) {
+		if(me.Tgt == nil and target != nil) {
+			me.Tgt = target;
+		}
+		if(me.Tgt != nil and target == nil) {
+			target = me.Tgt;
+		}
+
+		if (target == nil or me.Tgt == nil) {
+			#print("No Target!!!");
+			return nil;
+		} else {
+			#print("Target: Lat:"~me.Tgt.get_Coord().lat()~" Lon:"~me.Tgt.get_Coord().lon()~" Alt:"~me.Tgt.get_Coord().alt());
+		}
+
+        me.ccrp_agl = (getprop("position/altitude-ft")-me.Tgt.get_altitude())*FT2M;
+        #me.agl = getprop("position/altitude-agl-ft")*FT2M;
+        me.ccrp_alti = getprop("position/altitude-ft")*FT2M;
+        me.ccrp_roll = getprop("orientation/roll-deg");
+        me.ccrp_vel = getprop("velocities/groundspeed-kt")*0.5144;#m/s
+        me.ccrp_dens = getprop("sim/flight-model") == "jsb"?getprop("fdm/jsbsim/atmosphere/density-altitude"):getprop("position/altitude-ft");
+        me.ccrp_mach = getprop("velocities/mach");
+        me.ccrp_speed_down_fps = getprop("velocities/speed-down-fps");
+		me.ccrp_speed_east_fps = getprop("velocities/speed-east-fps");
+		me.ccrp_speed_north_fps = getprop("velocities/speed-north-fps");
+		if (me.eject_speed != 0 and !me.rail) {
+			# add ejector speed down from belly:
+			me.aircraft_vec = [me.ccrp_speed_north_fps,-me.ccrp_speed_east_fps,-me.ccrp_speed_down_fps];
+			me.eject_vec    = me.myMath.normalize(me.myMath.eulerToCartesian3Z(-OurHdg.getValue(),OurPitch.getValue(),OurRoll.getValue()));
+			me.eject_vec    = me.myMath.product(-me.eject_speed, me.eject_vec);
+			me.init_rel_vec = me.myMath.plus(me.aircraft_vec, me.eject_vec);
+			me.ccrp_speed_down_fps = -me.init_rel_vec[2];
+			me.ccrp_speed_east_fps = -me.init_rel_vec[1];
+			me.ccrp_speed_north_fps = me.init_rel_vec[0];
+		}
+
+        me.ccrp_t = 0.0;
+
+        me.ccrp_altC = me.ccrp_agl;
+        me.ccrp_vel_z = -me.ccrp_speed_down_fps*FT2M;#positive upwards
+        me.ccrp_fps_z = -me.ccrp_speed_down_fps;
+        me.ccrp_vel_x = math.sqrt(me.ccrp_speed_east_fps*me.ccrp_speed_east_fps+me.ccrp_speed_north_fps*me.ccrp_speed_north_fps)*FT2M;
+        me.ccrp_fps_x = me.ccrp_vel_x * M2FT;
+
+        me.ccrp_rs = me.rho_sndspeed(me.ccrp_dens-(me.ccrp_agl/2)*M2FT);
+        me.ccrp_rho = me.ccrp_rs[0];
+        me.ccrp_Cd = me.drag(me.ccrp_mach);
+        me.ccrp_mass = me.weight_launch_lbm * LBM2SLUGS;
+        me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_z * me.ccrp_fps_z;
+        me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
+
+        while (me.ccrp_altC > 0 and me.ccrp_t <= maxFallTime_sec) {
+          me.ccrp_t += timeStep;
+          me.ccrp_acc = -9.81 + me.ccrp_deacc * FT2M;
+          me.ccrp_vel_z += me.ccrp_acc * timeStep;
+          me.ccrp_altC = me.ccrp_altC + me.ccrp_vel_z*timeStep+0.5*me.ccrp_acc*timeStep*timeStep;
+        }
+        #printf("predict fall time=%0.1f", me.t);
+
+        if (me.ccrp_t >= maxFallTime_sec) {
+            return nil;
+        }
+
+        me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_x * me.ccrp_fps_x;
+        me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
+        me.ccrp_acc = -me.ccrp_deacc * FT2M;
+
+        me.ccrp_fps_x_final = me.ccrp_t*me.ccrp_acc+me.ccrp_fps_x;# calc final horz speed
+        me.ccrp_fps_x_average = (me.ccrp_fps_x-(me.ccrp_fps_x-me.ccrp_fps_x_final)*0.5);
+        me.ccrp_mach_average = me.ccrp_fps_x_average / me.ccrp_rs[1];
+
+        me.ccrp_Cd = me.drag(me.ccrp_mach_average);
+        me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_x_average * me.ccrp_fps_x_average;
+        me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
+        me.ccrp_acc = -me.ccrp_deacc * FT2M;
+        me.ccrp_dist = me.ccrp_vel_x*me.ccrp_t+0.5*me.ccrp_acc*me.ccrp_t*me.ccrp_t;
+
+        me.ccrp_ac = geo.aircraft_position();
+        me.ccrpPos = geo.Coord.new(me.ccrp_ac);
+
+        # we calc heading from composite speeds, due to alpha and beta might influence direction bombs will fall:
+        me.ccrp_heading = geo.normdeg(math.atan2(me.ccrp_speed_east_fps,me.ccrp_speed_north_fps)*R2D);
+        me.ccrpPos.apply_course_distance(me.ccrp_heading, me.ccrp_dist);
+
+        #printf("Will fall %0.1f NM ahead of aircraft.", me.dist*M2NM);
+        me.ccrp_elev = me.ccrp_alti-me.ccrp_agl;#faster
+        me.ccrpPos.set_alt(me.ccrp_elev);
+
+        me.ccrp_distCCRP = me.ccrpPos.distance_to(me.Tgt.get_Coord());
+        return me.ccrp_distCCRP;
+	},
+
 	getCCIPadv: func (maxFallTime_sec, timeStep) {
 		# for non flat areas. Lower falltime or higher timestep means using less CPU time.
 		# returns nil for higher than maxFallTime_sec. Else a vector with [Coord, hasTimeToArm].

@@ -3087,26 +3087,46 @@ append(obj.total, obj.speed_curr);
 
     CCRP: func(hdp) {
         if (hdp.fcs_available and hdp.getproper("master_arm") != pylons.ARM_OFF and pylons.fcs.getDropMode() == fc.DROP_CCRP) {
+
             var selW = pylons.fcs.getSelectedWeapon();
+
             if (selW == nil) {
                 me.solutionCue.hide();
                 me.ccrpMarker.hide();
                 me.bombFallLine.hide();
+                #print(">> No selected weapon.");
                 return 0;
             }
             var trgt = fc.getCCRPTarget();
             
             if (trgt == nil) {
+                #print("No target locked.");
+
                 # We must return 1 if its a bomb and were in CCRP drop mode
                 me.solutionCue.hide();
                 me.ccrpMarker.hide();
                 me.bombFallLine.hide();
                 return fc.containsVector(fc.CCIP_CCRP, selW.type);
+            } else {
+
+                selW.Tgt = trgt;
+                selW.status = armament.MISSILE_LOCK;
+
+                #print("Target locked: Lat:"~trgt.get_Coord().lat()~" Lon:"~trgt.get_Coord().lon()~" Alt:"~trgt.get_Coord().alt());
+
+                # Set the FG Program Target
+				setprop("f16/avionics/gps-lat", trgt.get_Coord().lat());
+				setprop("f16/avionics/gps-lon", trgt.get_Coord().lon());
+				setprop("f16/avionics/gps-alt", (trgt.get_Coord().alt()*M2FT));                
             }
             
-            if (!hdp.CCIP_active and
-                    fc.containsVector(fc.CCIP_CCRP, selW.type) and selW.status == armament.MISSILE_LOCK ) {
+            #if (!hdp.CCIP_active and fc.containsVector(fc.CCIP_CCRP, selW.type) and selW.status == armament.MISSILE_LOCK ) {
+            if (!hdp.CCIP_active and fc.containsVector(fc.CCIP_CCRP, selW.type)) {
+                #print(">> CCRP weapon selected.");
+               
                 me.distCCRP = getprop("payload/armament/distCCRP");
+                #print("me.distCCRP: "~me.distCCRP);
+
                 if (me.distCCRP == -1 or (me.distCCRP*M2NM > 13.2 and selW.guidance == "laser")) {#1F-F16CJ-34-1: max laser dist is 13.2nm
                     me.solutionCue.hide();
                     me.ccrpMarker.hide();

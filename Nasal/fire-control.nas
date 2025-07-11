@@ -1482,9 +1482,13 @@ var ccrp_loop = func () {
     var selW = pylons.fcs.getSelectedWeapon();
 
     # Exit if master switch off, no selected weapon, ccip, not A/G bomb, or not locked on a target
+	#BVR_ASA
+    #if (getprop(masterArmSwitch) == pylons.ARM_OFF or
+    #    	selW == nil or pylons.fcs.getDropMode() != DROP_CCRP or    
+	#        !containsVector(CCIP_CCRP, selW.type) or selW.status != armament.MISSILE_LOCK) {
     if (getprop(masterArmSwitch) == pylons.ARM_OFF or
         	selW == nil or pylons.fcs.getDropMode() != DROP_CCRP or
-            !containsVector(CCIP_CCRP, selW.type) or selW.status != armament.MISSILE_LOCK) {
+            !containsVector(CCIP_CCRP, selW.type)) {
     	ccrpTrgt = nil;
         setprop("payload/armament/distCCRP", -1);
         return;
@@ -1509,7 +1513,15 @@ var ccrp_loop = func () {
         if (dt < 0.1) dt = 0.1;
         var maxFallTime = 45;
     }
-    var distCCRP = selW.getCCRP(maxFallTime,dt);
+
+	if(ccrpTrgt == nil and selW.Tgt != nil) {
+		ccrpTrgt = selW.Tgt;
+	}
+	if(ccrpTrgt != nil and selW.Tgt == nil) {
+		selW.Tgt = ccrpTrgt;
+	}
+
+    var distCCRP = selW.getCCRPwithTarget(maxFallTime,dt,ccrpTrgt);
     if (distCCRP == nil) {
         distCCRP = -1;
     }

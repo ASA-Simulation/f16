@@ -274,6 +274,7 @@ var list = func (node) {
         } else {
             var terrain = geo.Coord.new();
             terrain.set_latlon(terrainGeod.lat, terrainGeod.lon, terrainGeod.elevation);
+            print("Target locked: Lat:"~terrainGeod.lat~" Lon:"~terrainGeod.lon~" Alt:"~terrainGeod.elevation);
             var ut = nil;
             foreach (u ; radar_system.getCompleteList()) {
                 if (terrain.direct_distance_to(u.get_Coord())<45) {
