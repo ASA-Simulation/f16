@@ -1365,6 +1365,14 @@ var AIM = {
     	me.dlz_opt   = me.clamp(me.max_fire_range_nm *0.3* (me.dlz_o_alt/me.dlz_opt_alt) + me.max_fire_range_nm *0.2* (me.dlz_t_alt/me.dlz_opt_alt) + me.max_fire_range_nm *0.5* (me.dlz_CS/me.dlz_opt_mach),me.min_fire_nm,me.max_fire_range_nm);
     	me.dlz_nez   = me.clamp(me.dlz_opt * (me.dlz_tG/45), me.min_fire_nm, me.dlz_opt);
     	me.printStatsDetails("Dynamic Launch Zone reported (NM): Maximum=%04.1f Optimistic=%04.1f NEZ=%04.1f Minimum=%04.1f",me.max_fire_range_nm,me.dlz_opt,me.dlz_nez,me.min_fire_nm);
+	
+		#BVR_ASA
+		if(string.match(me.type, "AIM-120")) {
+			## me.max_fire_range_nm = 38NM # HUD total range
+			me.dlz_nez = me.dlz_nez * 0.65; # NEZ 35% less range
+		}
+		#print(" WEZ:"~me.dlz_opt~" NEZ:"~me.dlz_nez~" Dist:"~(geo.aircraft_position().direct_distance_to(me.contactCoord)*M2NM));
+		
     	return [me.max_fire_range_nm,me.dlz_opt,me.dlz_nez,me.min_fire_nm,geo.aircraft_position().direct_distance_to(me.contactCoord)*M2NM];
 	},
 
