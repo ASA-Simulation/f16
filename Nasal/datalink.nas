@@ -213,6 +213,8 @@ var channel_hash_period = 600;
 
 var receive_period = getprop("/instrumentation/datalink/receive_period") or 1;
 
+var allied_tracker = ""; # callsign of an allied which is tracking enemies
+
 # Should be overwitten to add transmission restrictions.
 var can_transmit = func(contact, mp_prop, mp_index) {
     return 1;
@@ -369,7 +371,9 @@ var send_data = func(data, timeout=nil) {
     }
 
     # First encode channel
-    var str = encode_channel(input.channel.getValue());
+    # BVR_ASA
+    #var str = encode_channel(input.channel.getValue());
+    var str = input.channel.getValue();
 
     # Then all extensions
     last_data = data;
@@ -447,8 +451,14 @@ var receive_loop = func {
     connected_indices = [];
 
     var mp_models = input.models.getChildren("multiplayer");
+
+    #print("------------------------ DATALINK -----------------------------------");
+
     foreach(var mp; mp_models) {
         var idx = mp.getIndex();
+
+        #print("MP callsign "~idx~": "~mp.getValue("callsign"));
+
         if (!mp.getValue("valid")) continue;
         var callsign = mp.getValue("callsign");
         if (callsign == nil) continue;
@@ -464,18 +474,48 @@ var receive_loop = func {
         var tokens = split(data_separator, data);
 
         # Check channel
-        if (!check_channel(tokens[0], callsign, my_channel)) continue;
+        # BVR_ASA
+        #if (!check_channel(tokens[0], callsign, my_channel)) continue;
 
         # We check this _after_ the channel. Checking the channel is quite cheap,
         # and we don't know how slow this function is, it might have a get_cart_ground_intersection()
-        if (!can_transmit(callsign, mp, idx)) continue;
+        # BVR_ASA
+        #if (!can_transmit(callsign, mp, idx)) continue;
 
-        # Add to list of connected aircrafts.
-        append(connected_callsigns, callsign);
-        append(connected_indices, idx);
-        # Add to data
-        aircrafts_data = add_if_missing(aircrafts_data, callsign);
-        aircrafts_data[callsign].set_on_link(1);
+        #print("Allied Tracker: "~allied_tracker);
+
+        if (tokens[0] == my_channel) {  # Allied (same datalink channel)
+
+            #print("callsign "~idx~": "~callsign~" my_channel: "~my_channel~" channel: "~tokens[0]~" -> Connected!");
+
+            # Add to list of connected aircrafts.
+            append(connected_callsigns, callsign);
+            append(connected_indices, idx);
+
+            # Add to data
+            aircrafts_data = add_if_missing(aircrafts_data, callsign);
+            aircrafts_data[callsign].set_on_link(1);
+
+            if(callsign != my_callsign and aircrafts_data[callsign] != nil) {
+                allied_tracker = callsign;
+            }
+
+        }
+
+        if (tokens[0] != my_channel and allied_tracker != "") { # Enemy? (different datalink channel) and has someone which can track it 
+
+            aircrafts_data = add_if_missing(aircrafts_data, callsign);
+
+            #print("callsign "~idx~": "~callsign~" my_channel: "~my_channel~" channel: "~tokens[0]);
+
+            if(aircrafts_data[allied_tracker] != nil) { # if nobody is live and tracking the enemy anymore
+                aircrafts_data[callsign].set_iff(1);           
+                aircrafts_data[callsign].set_tracked_by(allied_tracker);
+            } else {
+                allied_tracker = "";
+            }
+
+        }
 
         # Parse extensions data
         for (var i=1; i<size(tokens); i+=1) {
