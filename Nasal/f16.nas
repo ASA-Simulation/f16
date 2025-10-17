@@ -1896,6 +1896,10 @@ var main_init_listener = setlistener("sim/signals/fdm-initialized", func {
             setprop("f16/texture/icp_wheels", "icp_wheels_white.png");
         }
 
+        # BVR_ASA - Aircraft initialization with Air Superiority configuration.
+        pylons.clean();
+        pylons.a2a_super();
+        
         if (pylons.fcs != nil) {#on the YF-16 it will be nil
             fc.ccrp_loopTimer.start();
         }
