@@ -254,7 +254,7 @@
         <aim-120>
             <type-id type="int">52</type-id>
             <short-name type="string">A120B</short-name>
-            <long-name type="string">AIM-120B AMRAAM</long-name>
+            <long-name type="string">AIM-120C AMRAAM</long-name>
             <guidance type="string">sample</guidance>
             <vol-search type="double">0.00</vol-search>
             <vol-track type="double">1.00</vol-track>
@@ -301,7 +301,7 @@
         <aim-asa-120>
             <type-id type="int">101</type-id>
             <short-name type="string">ASA120</short-name>
-            <long-name type="string">AIM-120B AMRAAM - ASA</long-name>
+            <long-name type="string">AIM-120C AMRAAM - ASA</long-name>
             <guidance type="string">sample</guidance>
             <vol-search type="double">0.00</vol-search>
             <vol-track type="double">1.00</vol-track>
