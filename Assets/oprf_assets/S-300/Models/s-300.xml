@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+
+<PropertyList>
+
+   <model>
+     <path>S-300_TEL_master.xml</path>
+    <name>tel</name>
+    <offsets>
+        <x-m> 0</x-m>
+        <y-m> 50</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>tel</object-name>
+  <property>sim/multiplay/generic/float[10]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation>
+
+
+ <model>
+    <path>ClamShell.xml</path>
+    <name>clamshell</name>
+    <offsets>
+        <x-m> -40</x-m>
+        <y-m> -40</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>clamshell</object-name>
+  <property>sim/multiplay/generic/float[11]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation>
+
+ <!--model>
+    <path>BigBird.ac</path>
+    <name>bigbird</name>
+    <offsets>
+        <x-m> 0</x-m>
+        <y-m> -40</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>bigbird</object-name>
+  <property>sim/multiplay/generic/float[12]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation-->
+
+ <model>
+    <path>BigBird_Tractor.ac</path>
+    <name>bigbirdT</name>
+    <offsets>
+        <x-m>  40</x-m>
+        <y-m> -40</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>bigbirdT</object-name>
+  <property>sim/multiplay/generic/float[13]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation>
+
+ <!--model>
+    <path>FlapLid_tractor.ac</path>
+    <name>flaplidT</name>
+    <offsets>
+        <x-m> -40</x-m>
+        <y-m> 40</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>flaplidT</object-name>
+  <property>sim/multiplay/generic/float[14]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation-->
+
+ <model>
+    <path>FlapLid_mast.xml</path>
+    <name>flaplid</name>
+    <offsets>
+        <x-m> 0</x-m>
+        <y-m> 0</y-m>
+        <z-m> 0</z-m>
+    </offsets>
+  </model>
+
+ <animation>
+  <type>translate</type>
+  <object-name>flaplid</object-name>
+  <property>sim/multiplay/generic/float[15]</property>
+  <offset-m>0.0</offset-m>
+  <factor>1.0</factor>
+  <axis>
+   <x>0</x>
+   <y>0</y>
+   <z>1</z>
+  </axis>
+ </animation>
+
+
+
+
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> 3.26307</x-m>
+            <y-m>-0.84611</y-m>
+            <z-m> 2.85616</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> 3.26307</x-m>
+            <y-m>-0.84611</y-m>
+            <z-m> 2.85616</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> 3.26307</x-m>
+            <y-m> 0.84611</y-m>
+            <z-m> 2.85616</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> 3.26307</x-m>
+            <y-m> 0.84611</y-m>
+            <z-m> 2.85616</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -0.80986</x-m>
+            <y-m> 0.00064</y-m>
+            <z-m> 3.24007</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -0.80986</x-m>
+            <y-m> 0.00064</y-m>
+            <z-m> 3.24007</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -3.97300</x-m>
+            <y-m> 0.00023</y-m>
+            <z-m> 1.83017</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -3.97300</x-m>
+            <y-m> 0.00023</y-m>
+            <z-m> 1.83017</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -4.26653</x-m>
+            <y-m> -1.82402</y-m>
+            <z-m> 1.44961</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -4.26653</x-m>
+            <y-m> -1.82402</y-m>
+            <z-m> 1.44961</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -4.26653</x-m>
+            <y-m> 1.82402</y-m>
+            <z-m> 1.44961</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -4.26653</x-m>
+            <y-m> 1.82402</y-m>
+            <z-m> 1.44961</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -0.63979</x-m>
+            <y-m> -2.14385</y-m>
+            <z-m> 0.05906</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -0.63979</x-m>
+            <y-m> -2.14385</y-m>
+            <z-m> 0.05906</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <offsets>
+            <x-m> -0.63979</x-m>
+            <y-m> 2.14385</y-m>
+            <z-m> 0.05906</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+ <model>
+    <path>Aircraft/S-300/Models/fire.xml</path>
+    <offsets>
+            <x-m> -0.63979</x-m>
+            <y-m> 2.14385</y-m>
+            <z-m> 0.05906</z-m>
+      <pitch-deg>0</pitch-deg>
+    </offsets>
+  </model>
+
+  <nasal>
+      <load><![CDATA[
+            ]]>
+      </load>
+  </nasal>
+
+</PropertyList>
