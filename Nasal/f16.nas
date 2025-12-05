@@ -255,11 +255,19 @@ var RWRView = func () {
 # to prevent dynamic view to act like helicopter due to defining <rotors>:
 dynamic_view.register(func {me.default_plane();});
 
-
 var LOOP_MEDIUM_FAST_RATE = 0.1;
+var FLARE_BURST_INTERVAL = 0.07;   # 0,05 s entre pares
+var FLARE_BURST_COUNT    = 30;     # 15 pares por rajada
+
 var medium_fast = {
     flareCount: -1,
     flareStart: -1,
+
+    # novo estado para rajada de flares
+    flareBurstActive: 0,
+    flareBurstRemaining: 0,
+    flareBurstTimer: nil,
+    flareNetSent: 0,
 
     init: func {
         me.aar_disc_timer = maketimer(3, func() { setprop("controls/lighting/ar-nws", 3); } );
@@ -268,6 +276,50 @@ var medium_fast = {
         me.timer = maketimer(LOOP_MEDIUM_FAST_RATE, me, func me.loop());
         me.loop();
         me.timer.start();
+
+        # timer da rajada de flares (15 pares a cada 0,05 s)
+        me.flareBurstTimer = maketimer(FLARE_BURST_INTERVAL, me, func me.flareBurstLoop());
+        me.flareBurstTimer.singleShot = 0;
+    },
+
+    # Loop da rajada de flares
+    flareBurstLoop: func {
+        # Se não tiver rajada ativa, para o timer
+        if (!me.flareBurstActive or me.flareBurstRemaining <= 0) {
+            me.flareBurstTimer.stop();
+            me.flareBurstActive = 0;
+            return;
+        }
+
+        # Se acabou energia ou flares, aborta rajada
+        if (me.cmElec.getDoubleValue() <= 20 or me.cmCount.getIntValue() <= 0) {
+            me.flareBurstTimer.stop();
+            me.flareBurstActive = 0;
+            return;
+        }
+
+        # Solta UM par de flares (visual + som)
+        me.cmReleaseSound.setBoolValue(1);
+        me.cmRelease.setBoolValue(1);
+        me.cmFlare.setDoubleValue(rand());
+        me.cmChaff.setDoubleValue(rand());
+
+        # Só a PRIMEIRA vez da rajada manda mensagem na rede
+        if (!me.flareNetSent) {
+            damage.flare_released();
+            me.flareNetSent = 1;
+        }
+
+        # Atualiza marca de tempo/contador para a lógica já existente
+        me.flareCount = me.cmCount.getIntValue();
+        me.flareStart = me.elapsed.getDoubleValue();
+
+        me.flareBurstRemaining -= 1;
+
+        if (me.flareBurstRemaining <= 0) {
+            me.flareBurstTimer.stop();
+            me.flareBurstActive = 0;
+        }
     },
 
     cmReleaseSound: props.globals.getNode("ai/submodels/submodel[0]/flare-release-snd"),
@@ -292,21 +344,28 @@ var medium_fast = {
         if (flareOn == 1 and me.cmRelease.getBoolValue() == 0
                 and me.cmReleaseOutSound.getBoolValue() == 0
                 and me.cmReleaseSound.getBoolValue() == 0) {
+
             me.flareCount = me.cmCount.getIntValue();
             me.flareStart = me.elapsed.getDoubleValue();
             me.cmReleaseCmd.setBoolValue(0);
-            if (me.flareCount > 0 and me.cmElec.getDoubleValue()>20) {
-                # release a chaff/flare
-                me.cmReleaseSound.setBoolValue(1);
-                me.cmRelease.setBoolValue(1);
-                me.cmFlare.setDoubleValue(rand());
-                me.cmChaff.setDoubleValue(rand());
-                damage.flare_released();
+
+            if (me.flareCount > 0 and me.cmElec.getDoubleValue() > 20) {
+                # Inicia RAJADA de flares
+                me.flareBurstActive = 1;
+                me.flareBurstRemaining = FLARE_BURST_COUNT;
+                me.flareNetSent = 0;
+
+                # primeiro par imediatamente
+                me.flareBurstLoop();
+                # restantes vão sair no timer a cada 0,07 s
+                me.flareBurstTimer.start();
+
             } else {
-                # play the sound for out of flares
+                # sem flares / sem energia → só toca som de vazio
                 me.cmReleaseOutSound.setBoolValue(1);
             }
         }
+
         if (me.cmReleaseSound.getBoolValue() == 1 and (me.flareStart + 0.95) < me.elapsed.getDoubleValue()) {
             me.cmReleaseSound.setBoolValue(0);
             me.cmFlare.setDoubleValue(0);
@@ -1384,7 +1443,7 @@ subsystem = SubSystem_Main.new("SubSystem_Main");
 
 
 var reloadCannon = func {
-    setprop("ai/submodels/submodel[0]/count", 100);#flares
+    setprop("ai/submodels/submodel[0]/count", 60); # Quantity of chaff/flares
     pylons.cannon.reloadAmmo();
 }
 

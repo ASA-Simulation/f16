@@ -7,8 +7,8 @@
     <model>Aircraft/f16/Models/Effects/flare/flare.xml</model>
     <trigger>ai/submodels/submodel[0]/flare-release</trigger>
     <speed>75.0</speed>   <!-- ft/sec -->
-    <repeat>false</repeat>
-    <delay>0.75</delay>
+    <repeat>true</repeat>
+    <delay>0.07</delay>
     <count>100</count>
     <offsets>
         <x-m>  3.25</x-m>
@@ -211,8 +211,8 @@
     <model>Aircraft/f16/Models/Effects/flare/flare.xml</model>
     <trigger>ai/submodels/submodel[0]/flare-release</trigger>
     <speed>68.0</speed>   <!-- ft/sec -->
-    <repeat>false</repeat>
-    <delay>0.75</delay>
+    <repeat>true</repeat>
+    <delay>0.07</delay>
     <count>100</count>
     <offsets>
         <x-m>  3.25</x-m>
