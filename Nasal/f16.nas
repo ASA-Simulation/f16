@@ -256,14 +256,14 @@ var RWRView = func () {
 dynamic_view.register(func {me.default_plane();});
 
 var LOOP_MEDIUM_FAST_RATE = 0.1;
-var FLARE_BURST_INTERVAL = 0.07;   # 0,05 s entre pares
-var FLARE_BURST_COUNT    = 30;     # 15 pares por rajada
+var FLARE_BURST_INTERVAL = 0.07;   # 0,07s interval between flares
+var FLARE_BURST_COUNT    = 30;     # 15 pais of each dispenser
 
 var medium_fast = {
     flareCount: -1,
     flareStart: -1,
 
-    # novo estado para rajada de flares
+    # new state of flare dispensers
     flareBurstActive: 0,
     flareBurstRemaining: 0,
     flareBurstTimer: nil,
@@ -277,40 +277,40 @@ var medium_fast = {
         me.loop();
         me.timer.start();
 
-        # timer da rajada de flares (15 pares a cada 0,05 s)
+        # timer of a full dispenser release (15 pairs - 0,07s interval)
         me.flareBurstTimer = maketimer(FLARE_BURST_INTERVAL, me, func me.flareBurstLoop());
         me.flareBurstTimer.singleShot = 0;
     },
 
-    # Loop da rajada de flares
+    # Loop for burst release
     flareBurstLoop: func {
-        # Se não tiver rajada ativa, para o timer
+        # If burst is active and there are flares available
         if (!me.flareBurstActive or me.flareBurstRemaining <= 0) {
             me.flareBurstTimer.stop();
             me.flareBurstActive = 0;
             return;
         }
 
-        # Se acabou energia ou flares, aborta rajada
+        # If energy or flares out, abort
         if (me.cmElec.getDoubleValue() <= 20 or me.cmCount.getIntValue() <= 0) {
             me.flareBurstTimer.stop();
             me.flareBurstActive = 0;
             return;
         }
 
-        # Solta UM par de flares (visual + som)
+        # Release on pair and play sound
         me.cmReleaseSound.setBoolValue(1);
         me.cmRelease.setBoolValue(1);
         me.cmFlare.setDoubleValue(rand());
         me.cmChaff.setDoubleValue(rand());
 
-        # Só a PRIMEIRA vez da rajada manda mensagem na rede
+        # ONLY the first release send the network message 
         if (!me.flareNetSent) {
             damage.flare_released();
             me.flareNetSent = 1;
         }
 
-        # Atualiza marca de tempo/contador para a lógica já existente
+        # Update counter and time
         me.flareCount = me.cmCount.getIntValue();
         me.flareStart = me.elapsed.getDoubleValue();
 
@@ -350,18 +350,18 @@ var medium_fast = {
             me.cmReleaseCmd.setBoolValue(0);
 
             if (me.flareCount > 0 and me.cmElec.getDoubleValue() > 20) {
-                # Inicia RAJADA de flares
+                # Init the flare burst release
                 me.flareBurstActive = 1;
                 me.flareBurstRemaining = FLARE_BURST_COUNT;
                 me.flareNetSent = 0;
 
-                # primeiro par imediatamente
+                # first pair imediately
                 me.flareBurstLoop();
-                # restantes vão sair no timer a cada 0,07 s
+                # the others will be release in 0,07s interval
                 me.flareBurstTimer.start();
 
             } else {
-                # sem flares / sem energia → só toca som de vazio
+                # flares or energy out
                 me.cmReleaseOutSound.setBoolValue(1);
             }
         }
