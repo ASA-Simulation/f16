@@ -500,20 +500,20 @@ var receive_loop = func {
                 allied_tracker = callsign;
             }
 
-        }
+        } else {
 
-        if (tokens[0] != my_channel and allied_tracker != "") { # Enemy? (different datalink channel) and has someone which can track it 
+            #if (tokens[0] != my_channel and allied_tracker != "") { # Enemy? (different datalink channel) and has someone which can track it 
 
             aircrafts_data = add_if_missing(aircrafts_data, callsign);
 
             #print("callsign "~idx~": "~callsign~" my_channel: "~my_channel~" channel: "~tokens[0]);
 
-            if(aircrafts_data[allied_tracker] != nil) { # if nobody is live and tracking the enemy anymore
-                aircrafts_data[callsign].set_iff(1);           
+            #if(aircrafts_data[allied_tracker] != nil) { # if nobody is live and tracking the enemy anymore
+                aircrafts_data[callsign].set_iff(0);           
                 aircrafts_data[callsign].set_tracked_by(allied_tracker);
-            } else {
-                allied_tracker = "";
-            }
+            #} else {
+            #    allied_tracker = "";
+            #}
 
         }
 
