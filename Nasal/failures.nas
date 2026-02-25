@@ -305,9 +305,10 @@ var init = func {
     
 	#foreach (mode;FailureMgr.get_failure_modes()) print(mode.id);
 
-	trigger_eng = RandVneTrigger.new(0.25, 1, "f16/vne");
-	FailureMgr.set_trigger("engines/engine", trigger_eng);
-	trigger_eng.arm();
+    # BVR_ASA - Disabling engine failures.
+	#trigger_eng = RandVneTrigger.new(0.25, 1, "f16/vne");
+	#FailureMgr.set_trigger("engines/engine", trigger_eng);
+	#trigger_eng.arm();
     
     #
     # Add failure for HUD to the compatible failures. This will setup the property tree in the normal way; 
