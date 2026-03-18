@@ -310,6 +310,7 @@ var CrashAndStress = {
 		    if(me.probability > 0.766 and me.fdm.input.fuel.getValue() > 2500) {
 		    	# 175kt+ and fuel in tanks will explode the aircraft on impact.
 		    	me.input.simCrashed.setBoolValue(1);
+				me._notifyKilledGroundMP();
 		    	me._explodeBegin("Aircraft hit "~me.hitStr~".");
 		    	return;
 		    }
@@ -465,6 +466,26 @@ var CrashAndStress = {
 		}
 		return 0;
 	},
+	_notifyKilledGroundMP: func {
+
+		var callsign = getprop("/sim/multiplay/callsign");
+		var unique_id = int(rand() * 15000000);
+
+		# kind = 4  -> IMPACT
+		# secondaryKind = 10 -> Ground collision
+		var msg = notifications.ArmamentNotification.new("mhit", 4, 10, unique_id);
+
+		msg.RelativeAltitude = 0;
+		msg.Bearing = 0;
+		msg.Distance = 0;
+
+		msg.RemoteCallsign = callsign;
+		msg.Callsign = callsign;
+
+		notifications.hitBridgedTransmitter.NotifyAll(msg);
+
+		print("MP: Ground collision ArmamentNotification sent.");
+	},	
 };
 
 
