@@ -2807,7 +2807,7 @@ var AIM = {
         	lockMutex(mutexTimer);
         	var rdr = me.guidance=="radar";
         	var semiRdr = (me.guidance=="semi-radar" and !me.semiLostLock) or (me.guidance=="command" and me.guiding);# Continous wave illuminator active on the target
-			print("notifyInFlight flight: ", me.free, me.lostLOS, me.tooLowSpeed, me.flareLock, me.chaffLock, me.callsign);
+			print("notifyInFlight flight: ", me.free, " ", me.lostLOS, " ", me.tooLowSpeed, " ", me.flareLock, " ", me.chaffLock, " ", me.callsign);
 			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.latN.getValue(), me.lonN.getValue(), me.altN.getValue()*FT2M,rdr,semiRdr,me.typeID,me.type,me.unique_id,me.thrust_lbf>0,(me.free or me.lostLOS or me.flareLock or me.chaffLock)?"":me.callsign, me.hdg, me.pitch, me.new_speed_fps, 0], -1]);
 			unlockMutex(mutexTimer);
         }
@@ -4502,7 +4502,7 @@ var AIM = {
         msg.u_fps = speed;
         #msg.isValid();
         notifications.geoBridgedTransmitter.NotifyAll(msg);
-		print("fox2.nas: transmit in flight", callsign);
+		print("fox2.nas: transmit in flight: ", callsign);
 #f14.debugRecipient.Receive(msg);
 	},
 
@@ -4570,10 +4570,11 @@ var AIM = {
 			var hitPrimaryTarget = 0;
 			if (me.Tgt != nil and !me.Tgt.isVirtual()) {
 				var tgtLabel = me.callsign;
-				if(me.flareLock)
+				if(me.flareLock) {
 					tgtLabel ~= "'s flare";
-				elsif (me.chaffLock)
+				} elsif(me.chaffLock) {
 					tgtLabel ~= "'s chaff";
+				}
 				if (range != nil and range < me.reportDist) {
 					phrase = sprintf(me.type ~ " " ~ event ~ ": %.1f meters from: " ~ tgtLabel, range);
 					if (!me.flareLock and !me.chaffLock) {
@@ -4587,7 +4588,13 @@ var AIM = {
 			}
 			if (phrase != nil) {
 				me.printStats("%s  time %.1f", phrase, me.life_time);
-				print("armamanet/msg: hitPrimaryTarget: "~hitPrimaryTarget~" wh_mass:"~wh_mass);
+
+				#hitPrimaryTarget = 1;
+				#range = 1.0;
+
+				print("------------------------------------------------------------------------------------------------");
+				print("notifyHit/explode: getprop(payload/armament/msg):"~getprop("payload/armament/msg")~" hitPrimaryTarget: "~hitPrimaryTarget~" hitGround:"~hitGround~" wh_mass:"~wh_mass);
+				print(me.type ~ " " ~ event ~ ": " ~range~ " meters from: " ~ tgtLabel);
 
 				# BVR_ASA - Bomb Hit ground targets
 				if(getprop("payload/armament/msg") and hitPrimaryTarget and hitGround == 0 and wh_mass > 0){
@@ -4633,6 +4640,7 @@ var AIM = {
 	                unlockMutex(mutexTimer);
 
 	            }
+				print("------------------------------------------------------------------------------------------------");
 			}
 			if (me.multiHit and !me.multiExplosion(coordinates, event, wh_mass) and me.Tgt != nil and me.Tgt.isVirtual()) {
 				phrase = sprintf(me.type~" "~event);

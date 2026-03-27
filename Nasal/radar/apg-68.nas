@@ -3626,7 +3626,7 @@ var add_if_not_exists = func(new_callsgn) {
         }
     }
     if(string.match(new_callsgn, "*@*")) {
-	    print("Added: ", new_callsgn);
+	    print("Target tracked: ", new_callsgn);
 		append(targetList, new_callsgn); # Adiciona a string se não foi encontrada
 	}
 };
