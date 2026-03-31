@@ -231,6 +231,7 @@ var AIM = {
 		m.type = type;
 
 		m.deleted = 0;
+		m.destroy_notified = 0;
 
 		m.status            = MISSILE_STANDBY; # -1 = stand-by, 0 = searching, 1 = locked, 2 = fired.
 		m.free              = 0; # 0 = status fired with lock, 1 = status fired but having lost lock.
@@ -777,7 +778,11 @@ var AIM = {
 		#
 		# Fuse
 		#
-		m.crc_frames_look_back = 2;
+		m.crc_frames_look_back        = 5;
+		m.crc_passed_target_frames    = 3;   # quantos frames consecutivos de abertura exigimos
+		m.crc_range_increase_count    = 0;
+		m.crc_passed_target_gate_m    = 250; # gate de proximidade para considerar closest approach
+		m.crc_min_increase_m          = 2;   # evita reagir a ruído muito pequeno
 		m.crc_coord    = [];
 		m.crc_t_coord  = [];
 		m.crc_range    = [];
@@ -830,6 +835,13 @@ var AIM = {
 		m.CRE_old_dt = 0.05;
 		m.steer_for_free = 0;
 
+		m.t_coord_prev              = nil;
+		m.t_coord_prev_time         = nil;
+		m.t_ecef_vel_est            = [0, 0, 0];
+		m.t_ecef_vel_valid          = 0;
+		m.t_dead_reckon_max_dt      = 1.0;   # não confiar em sample muito antigo
+		m.t_dead_reckon_lead_time   = 0.20;  # compensação pequena de latência/jitter
+		m.t_dead_reckon_enabled     = 1;
 
 
 		#
@@ -952,12 +964,11 @@ var AIM = {
 					unlockMutex(tacview.mutexWrite);
 				}
 			}
-			if(getprop("payload/armament/msg")) {
-				lockMutex(mutexTimer);
-				#lat,lon,alt,rdar,typeID,typ,unique,thrustOn,callsign, heading, pitch, speed, is_deleted=0
+			if(getprop("payload/armament/msg") and !me.destroy_notified) {
+				me.destroy_notified = 1;
 				print("notifyInFlight del");
-				appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [nil, -1, -1, 0, 0, me.typeID, "delete()", me.unique_id, 0,"", 0, 0, 0, 1], -1]);
-				unlockMutex(mutexTimer);
+				appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight,
+					[nil, -1, -1, 0, 0, me.typeID, "delete()", me.unique_id, 0, "", 0, 0, 0, 1], -1]);
 			}
 		} else {
 			delete(AIM.active, me.ID);
@@ -2600,13 +2611,29 @@ var AIM = {
 				if (me.guidance != "gps" and (me.guidance != "gps-laser" or me.is_laser_painted(me.Tgt))) {# gps never updated inflight, gps-laser only when laser is online
 					me.t_coord = geo.Coord.new(me.Tgt.get_Coord());#in case multiple missiles use same Tgt we cannot rely on coords being different, so we extra create new.
 				}
-				if (me.t_coord == nil or !me.t_coord.is_defined()) {
-					# just to protect the multithreaded code for invalid pos.
-					print("Missile target has undefined coord!");
-					me.Tgt = nil;
-				} else {
-					me.t_coord.alt();# TODO: once fixed in FG this line is no longer needed.
+				
+				if (me.t_coord != nil and me.t_coord.is_defined()) {
+					var now = me.life_time;
+
+					if (me.t_coord_prev != nil and me.t_coord_prev_time != nil) {
+						var dt_tgt = now - me.t_coord_prev_time;
+
+						if (dt_tgt > 0.01 and dt_tgt < me.t_dead_reckon_max_dt) {
+							var vx = (me.t_coord.x() - me.t_coord_prev.x()) / dt_tgt;
+							var vy = (me.t_coord.y() - me.t_coord_prev.y()) / dt_tgt;
+							var vz = (me.t_coord.z() - me.t_coord_prev.z()) / dt_tgt;
+
+							me.t_ecef_vel_est = [vx, vy, vz];
+							me.t_ecef_vel_valid = 1;
+						} else {
+							me.t_ecef_vel_valid = 0;
+						}
+					}
+
+					me.t_coord_prev = geo.Coord.new(me.t_coord);
+					me.t_coord_prev_time = now;
 				}
+
 			} else {
 				# we are chasing a flare, lets update the flares position.
 				if (me.flareLock) {
@@ -4381,17 +4408,27 @@ var AIM = {
 
 			if (me.life_time > me.arming_time) {
 				# Distance to target increase.
-				if (me.crc_range[0] > me.crc_range[1] and me.crc_range[0] < 250) {
-					# Compute the closest approach.
-					me.subframeClosestRangeCoord();  # Provides `me.crc_closestRange` and `me.crc_missileCoord`.
 
+				var rangeIncreasing = 0;
+				var rangeDelta = me.crc_range[0] - me.crc_range[1];
+
+				if (rangeDelta > me.crc_min_increase_m and me.crc_range[0] < me.crc_passed_target_gate_m) {
+					rangeIncreasing = 1;
+				}
+
+				if (rangeIncreasing) {
+					me.crc_range_increase_count += 1;
+				} else {
+					me.crc_range_increase_count = 0;
+				}
+
+				if (me.crc_range_increase_count >= me.crc_passed_target_frames) {
+					# Compute the closest approach.
+					me.subframeClosestRangeCoord();  # Provides me.crc_closestRange and me.crc_missileCoord
 					me.explode("Passed target.", me.crc_missileCoord, me.crc_closestRange);
 					return 1;
 				}
-	            if (me.life_time > me.selfdestruct_time or (me.destruct_when_free and me.free)) {
-					me.explode("Selfdestructed.", me.coord);
-				    return 1;
-				}
+
 			}
 			me.direct_dist_m = me.crc_range[0];
 		} elsif (me.life_time > me.selfdestruct_time) {
@@ -4537,6 +4574,10 @@ var AIM = {
 	},
 
 	explode: func (reason, coordinates, range = nil, event = "exploded") {
+
+		me.coord = coordinates;
+		me.stopFlight = 1;
+
 		var hitGround = 0;
 		if (reason == "Hit terrain.") {
 			hitGround = 1;
@@ -4551,11 +4592,13 @@ var AIM = {
 
 		me.coord = coordinates;  # Set the current missile coordinates at the explosion point.
 
-		if(getprop("payload/armament/msg")) {
+		if(getprop("payload/armament/msg") and !me.destroy_notified) {
+			me.destroy_notified = 1;
 			lockMutex(mutexTimer);
-			print("notifyInFlight explode");
+			print("notifyInFlight explode -> destroy");
 			print("Explode: "~me.unique_id);
-			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight, [me.coord.lat(), me.coord.lon(), me.coord.alt(),0,0,me.typeID,me.type,me.unique_id,0,"", me.hdg, me.pitch, 0, 0], -1]);
+			appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight,
+				[nil, -1, -1, 0, 0, me.typeID, "explode()", me.unique_id, 0, "", 0, 0, 0, 1], -1]);
 			unlockMutex(mutexTimer);
 		}
 
@@ -4568,6 +4611,10 @@ var AIM = {
 		if (!me.inert) {
 			var phrase = nil;
 			var hitPrimaryTarget = 0;
+
+			#hitPrimaryTarget = 1;
+			#range = 1.0;
+
 			if (me.Tgt != nil and !me.Tgt.isVirtual()) {
 				var tgtLabel = me.callsign;
 				if(me.flareLock) {
@@ -4589,12 +4636,15 @@ var AIM = {
 			if (phrase != nil) {
 				me.printStats("%s  time %.1f", phrase, me.life_time);
 
-				#hitPrimaryTarget = 1;
-				#range = 1.0;
-
+				#print("------------------------------------------------------------------------------------------------");
+				#print("notifyHit/explode: getprop(payload/armament/msg):"~getprop("payload/armament/msg")~" hitPrimaryTarget: "~hitPrimaryTarget~" hitGround:"~hitGround~" wh_mass:"~wh_mass);
+				#print(me.type ~ " " ~ event ~ ": " ~range~ " meters from: " ~ tgtLabel);
 				print("------------------------------------------------------------------------------------------------");
-				print("notifyHit/explode: getprop(payload/armament/msg):"~getprop("payload/armament/msg")~" hitPrimaryTarget: "~hitPrimaryTarget~" hitGround:"~hitGround~" wh_mass:"~wh_mass);
-				print(me.type ~ " " ~ event ~ ": " ~range~ " meters from: " ~ tgtLabel);
+				print("notifyHit/explode: getprop(payload/armament/msg):" ~ getprop("payload/armament/msg")
+					~ " hitPrimaryTarget: " ~ hitPrimaryTarget
+					~ " hitGround:" ~ hitGround
+					~ " wh_mass:" ~ wh_mass);
+				print(phrase);
 
 				# BVR_ASA - Bomb Hit ground targets
 				if(getprop("payload/armament/msg") and hitPrimaryTarget and hitGround == 0 and wh_mass > 0){
@@ -4607,6 +4657,7 @@ var AIM = {
 					print("me.typeID: "~me.typeID);
 					print("me.typeLong: "~me.typeLong);
 					print("me.unique_id: "~me.unique_id);
+					print("me.reportDist: "~me.reportDist);			
 
 					lockMutex(mutexTimer);
 					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
@@ -4621,6 +4672,7 @@ var AIM = {
 					print("me.typeID: "~me.typeID);
 					print("me.typeLong: "~me.typeLong);
 					print("me.unique_id: "~me.unique_id);
+					print("me.reportDist: "~me.reportDist);			
 
 					lockMutex(mutexTimer);
 					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt(),0,me.callsign,coordinates.course_to(coordinates),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
@@ -4629,11 +4681,17 @@ var AIM = {
                 } else {
 
 					print(">>>>>>>>>>>>>> Missile lost...");
+					print("range: "~range);
 					print("me.callsign: "~me.callsign);
 					print("reason: "~reason);
 					print("me.typeID: "~me.typeID);
 					print("me.typeLong: "~me.typeLong);
 					print("me.unique_id: "~me.unique_id);
+					print("me.reportDist: "~me.reportDist);			
+
+					lockMutex(mutexTimer);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					unlockMutex(mutexTimer);
 
 	                lockMutex(mutexTimer);
 	                appendTimer(AIM.timerQueue, [AIM, AIM.log, [phrase], 0]);
