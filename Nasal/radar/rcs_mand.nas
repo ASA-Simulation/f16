@@ -8,7 +8,7 @@ var rcs_oprf_database = {
     "F-15C":                    10,     #low end of sources
     "F-15D":                    11,     #low end of sources
     "f15-bs":                   0.0001,
-    "F-16":                     2,
+    "F-16":                     5,
     "JA37-Viggen":              3,      
     "AJ37-Viggen":              3,      #gone
     "AJS37-Viggen":             3,      
