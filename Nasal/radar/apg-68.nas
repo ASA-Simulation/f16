@@ -901,7 +901,17 @@ var RadarMode = {
 		update_array();
 
 		var gcl = getCompleteList();
-		
+
+		if (size(targetList) == 0) {
+			print("cycleDesignate: no tracks.");
+			me.priorityTarget = nil;
+			return;
+		}
+
+		if (targetIndex < 0 or targetIndex >= size(targetList)) {
+			targetIndex = 0;
+		}
+				
 		if(targetIndex < (size(targetList)-1)) {
 			targetIndex = targetIndex + 1;
 		} else {
