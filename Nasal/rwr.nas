@@ -199,16 +199,21 @@ RWRCanvas = {
                     .setStrokeLineWidth(rwr.stroke*1.2)
                     .setColor(colorG)
                     .hide();
-        rwr.symbol_maw = rwr.rootCenter.createChild("path")
-                    .moveTo(0,-font*1.2)
-                    .lineTo(font*0.2, -font*1.0)
-                    .vert(font*2)
-                    .horiz(-font*0.4)
-                    .vert(-font*2)
-                    .lineTo(0,-font*1.2)
-                    .setStrokeLineWidth(rwr.stroke*1.2)
-                    .setColor(colorG)
-                    .hide();
+
+        rwr.symbol_maw = setsize([], 8);
+
+        for (var i = 0; i < 8; i += 1) {
+            rwr.symbol_maw[i] = rwr.rootCenter.createChild("path")
+                .moveTo(0,-font*1.2)
+                .lineTo(font*0.2, -font*1.0)
+                .vert(font*2)
+                .horiz(-font*0.4)
+                .vert(-font*2)
+                .lineTo(0,-font*1.2)
+                .setStrokeLineWidth(rwr.stroke*1.2)
+                .setColor(colorG)
+                .hide();
+        }
                     
         
 #        rwr.symbol_16_air = setsize([],max_icons);
@@ -302,14 +307,12 @@ RWRCanvas = {
         me.showUnknowns = getprop("f16/ews/rwr-show-unknowns");
         me.pri5 = getprop("f16/ews/rwr-show-priority-only");
         me.elapsed = getprop("sim/time/elapsed-sec");
+        
         me.semiCallsign = getprop("payload/armament/MAW-semiactive-callsign");
-        me.launchCallsign = getprop("sound/rwr-launch");
-        if (me.launchCallsign == "" or me.launchCallsign == nil) {
-            me.launchCallsign = "-........-";
-        }
-        if (me.semiCallsign == "" or me.semiCallsign == nil) {
-            me.semiCallsign = "-........-";
-        }
+
+        me.launchCallsignList = getprop("sound/rwr-launch-list");
+        if (me.launchCallsignList == nil) me.launchCallsignList = "";
+
         var sorter = func(a, b) {
             if(a[1] > b[1]){
                 return -1; # A should before b in the returned vector
@@ -419,7 +422,10 @@ RWRCanvas = {
             } else {
                 me.symbol_hat[me.i].hide();
             }
-            if ((me.contact[0].get_Callsign()==me.launchCallsign or me.contact[0].get_Callsign()==me.semiCallsign) and 5*(me.elapsed-int(me.elapsed))>2.5) {#blink 4Hz
+
+            var cs = me.contact[0].get_Callsign();
+
+            if ((find(";" ~ me.launchCallsignList, ";" ~ cs ~ ";") >= 0 or cs == me.semiCallsign) and 5*(me.elapsed-int(me.elapsed)) > 2.5) {
                 me.symbol_launch[me.i].setTranslation(me.x,me.y);
                 me.symbol_launch[me.i].show();
             } else {
@@ -466,17 +472,31 @@ RWRCanvas = {
         setprop("f16/ews/rwr-pri", me.pri5 and (!me.priFlash or math.mod(me.noiseup, 5) < 2.5));        # PRI light 
         setprop("f16/ews/rwr-unk", me.showUnknowns or (me.unkFlash and math.mod(me.noiseup, 5) < 2.5)); # UNK light
         
-        if (getprop("payload/armament/MAW-active")) {
-          me.mawdegs = getprop("payload/armament/MAW-bearing");
-          me.dev = -geo.normdeg180(me.mawdegs-getprop("orientation/heading-deg"))+90;
-          me.x = math.cos(me.dev*D2R)*(me.inner_radius+me.outer_radius)*0.5;
-          me.y = -math.sin(me.dev*D2R)*(me.inner_radius+me.outer_radius)*0.5;
-          me.symbol_maw.setRotation(-(me.dev+90)*D2R);
-          me.symbol_maw.setTranslation(me.x, me.y);
-          me.symbol_maw.show();
-        } else {
-          me.symbol_maw.hide();
+        var mawList = getprop("payload/armament/MAW-bearing-list");
+        if (mawList == nil) mawList = "";
+
+        var mawBearings = split(";", mawList);
+        var mawIndex = 0;
+
+        foreach (var b; mawBearings) {
+            if (b == "" or mawIndex >= 8) continue;
+
+            me.mawdegs = num(b);
+            me.dev = -geo.normdeg180(me.mawdegs - getprop("orientation/heading-deg")) + 90;
+            me.x = math.cos(me.dev * D2R) * (me.inner_radius + me.outer_radius) * 0.5;
+            me.y = -math.sin(me.dev * D2R) * (me.inner_radius + me.outer_radius) * 0.5;
+
+            me.symbol_maw[mawIndex].setRotation(-(me.dev + 90) * D2R);
+            me.symbol_maw[mawIndex].setTranslation(me.x, me.y);
+            me.symbol_maw[mawIndex].show();
+
+            mawIndex += 1;
         }
+
+        for (; mawIndex < 8; mawIndex += 1) {
+            me.symbol_maw[mawIndex].hide();
+        }
+
     },
 };
 var test_equals = func {

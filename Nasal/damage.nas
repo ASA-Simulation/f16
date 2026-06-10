@@ -33,6 +33,24 @@ setprop("sam/damage", math.max(0,100*hp/hp_max));#used in HUD
 
 # BVR_ASA
 var last_missile_clock_pos = "";
+var rwrLaunchers = {};
+var launchTimerRunning = 0;
+var mawMissiles = {};var mawMissiles = {};
+
+var updateMAWList = func {
+    var now = getprop("sim/time/elapsed-sec");
+    var mawList = "";
+
+    foreach (var k; keys(mawMissiles)) {
+        if (mawMissiles[k][1] > now) {
+            mawList ~= mawMissiles[k][0] ~ ";";
+        } else {
+            delete(mawMissiles, k);
+        }
+    }
+
+    setprop("payload/armament/MAW-bearing-list", mawList);
+}
 
 var shells = {
     # [id,damage,(name)]
@@ -421,11 +439,17 @@ var DamageRecipient =
                   #if (launch == nil or elapsed - launch > 300) { # BVR_ASA
                     launch = elapsed;
                     launched[notification.Callsign~notification.UniqueIdentity] = launch;
-                    if (notification.Position.direct_distance_to(ownPos)*M2NM < mlw_max) {
+
+                  if (notification.Position.direct_distance_to(ownPos)*M2NM < mlw_max) {
                       setprop("payload/armament/MLW-bearing", bearing);
                       setprop("payload/armament/MLW-launcher", notification.Callsign);
                       setprop("payload/armament/MLW-count", getprop("payload/armament/MLW-count")+1);
+
+                      # NOVO: registra cada lançador numa lista, sem sobrescrever o anterior
+                      setLaunch(notification.Callsign, 0);
+
                       var out = sprintf("Missile Launch Warning from %03d degrees.", bearing);
+
                       if (rwr_to_screen) screen.log.write(out, 1,0.5,0);# temporary till someone models a RWR in RIO seat
                       print(out);
                       damageLog.push(sprintf("Missile Launch Warning from %03d degrees from %s.", bearing, notification.Callsign));
@@ -455,11 +479,16 @@ var DamageRecipient =
                 #var heading = getprop("orientation/heading-deg");
                 #var clock = geo.normdeg(bearing - heading);
                 if (radarOn) {
-                    setprop("payload/armament/MAW-bearing", bearing);
-                    setprop("payload/armament/MAW-active", 1);# resets every 1 seconds
+                  setprop("payload/armament/MAW-bearing", bearing);
+                  setprop("payload/armament/MAW-active", 1);
+
+                  var mawKey = notification.Callsign ~ notification.UniqueIdentity;
+                  mawMissiles[mawKey] = [bearing, elapsed + 1.1];
+                  setprop("payload/armament/MAW-bearing-list", bearing ~ ";");
+                  updateMAWList();
                 } elsif (CWIOn) {
-                    setprop("payload/armament/MAW-semiactive", 1);# resets every 1 seconds
-                    if (notification.Callsign != nil) setprop("payload/armament/MAW-semiactive-callsign", notification.Callsign);# resets every 1 seconds
+                  setprop("payload/armament/MAW-semiactive", 1);# resets every 1 seconds
+                  if (notification.Callsign != nil) setprop("payload/armament/MAW-semiactive-callsign", notification.Callsign);# resets every 1 seconds
                 }
                 MAW_elapsed = elapsed;
                 var appr = approached[notification.Callsign~notification.UniqueIdentity];
@@ -1358,23 +1387,74 @@ var fail_fleet_systems = func (probability, factor) {
   return -1;
 };
 
-setlistener("payload/armament/MLW-count", func {
-  setLaunch(getprop("payload/armament/MLW-launcher"), 0);#TODO: figure out if that callsign is a SAM/ship.
-});
+#setlistener("payload/armament/MLW-count", func {
+#  setLaunch(getprop("payload/armament/MLW-launcher"), 0);#TODO: figure out if that callsign is a SAM/ship.
+#});
 
 #==================================================================
 #                       RWR and sound functions
 #==================================================================
 
-var setLaunch = func (c,s) {
-  setprop("sound/rwr-launch-sam", s);
-  setprop("sound/rwr-launch", c);
-  settimer(func {stopLaunch();},7);
+var stopLaunch = func {
+    var now = getprop("sim/time/elapsed-sec");
+    var list = "";
+
+    foreach (var cs; keys(rwrLaunchers)) {
+
+        if (rwrLaunchers[cs] > now) {
+            list ~= cs ~ ";";
+        } else {
+            delete(rwrLaunchers, cs);
+        }
+    }
+
+    setprop("sound/rwr-launch-list", list);
+
+    if (size(keys(rwrLaunchers)) == 0) {
+        setprop("sound/rwr-launch-sam", 0);
+    }
 }
 
-var stopLaunch = func () {
-  setprop("sound/rwr-launch", "");
-  setprop("sound/rwr-launch-sam", 0);
+var setLaunch = func(c, s) {
+
+    if (c == nil or c == "") return;
+
+    rwrLaunchers[c] =
+        getprop("sim/time/elapsed-sec") + 7.0;
+
+    var list = "";
+
+    foreach (var cs; keys(rwrLaunchers)) {
+
+        if (rwrLaunchers[cs] >
+            getprop("sim/time/elapsed-sec")) {
+
+            list ~= cs ~ ";";
+        }
+    }
+
+    setprop("sound/rwr-launch-list", list);
+    setprop("sound/rwr-launch-sam", s);
+
+    if (!launchTimerRunning) {
+
+        launchTimerRunning = 1;
+
+        var updater = nil;
+
+        updater = func {
+
+            stopLaunch();
+
+            if (size(keys(rwrLaunchers)) > 0) {
+                settimer(updater, 0.25);
+            } else {
+                launchTimerRunning = 0;
+            }
+        };
+
+        settimer(updater, 0.25);
+    }
 }
 
 var playIncomingSound = func (clock) {
@@ -1442,11 +1522,29 @@ var processCallsigns = func () {
       }
     }
   }
-  if (getprop("sim/time/elapsed-sec")-MAW_elapsed > 1.1) {
-      setprop("payload/armament/MAW-active", 0);# resets every 1.1 seconds without warning
+
+  var now = getprop("sim/time/elapsed-sec");
+  var mawList = "";
+
+  foreach (var k; keys(mawMissiles)) {
+      if (mawMissiles[k][1] > now) {
+          mawList ~= mawMissiles[k][0] ~ ";";
+      } else {
+          delete(mawMissiles, k);
+      }
+  }
+
+  setprop("payload/armament/MAW-bearing-list", mawList);
+
+  if (mawList == "") {
+      setprop("payload/armament/MAW-active", 0);
+  }
+
+  if (now - MAW_elapsed > 1.1) {
       setprop("payload/armament/MAW-semiactive", 0);
       setprop("payload/armament/MAW-semiactive-callsign", "");
   }
+
   if (tacview_supported and tacview.starttime) {
     var keyss = keys(lastSeenTacObject);
     var elapsed = getprop("sim/time/elapsed-sec");
