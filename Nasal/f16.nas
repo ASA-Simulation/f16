@@ -499,12 +499,23 @@ var medium = {
     },
 
     loop: func {
+
         # Store CAT:
+        var storesCat = 1;
+
         if (pylons.fcs != nil) {
-            setprop("f16/stores-cat", pylons.fcs.getCategory());
-        } else {
-            setprop("f16/stores-cat", 1);
+            storesCat = pylons.fcs.getCategory();
         }
+
+        setprop("f16/stores-cat", storesCat);
+
+        # Auto CAT I / CAT III conforme payload carregado
+        if (storesCat > 1) {
+            setprop("fdm/jsbsim/fcs/fly-by-wire/enable-cat-III", 1);
+        } else {
+            setprop("fdm/jsbsim/fcs/fly-by-wire/enable-cat-III", 0);
+        }
+
         # strobe light:
         if (getprop("controls/lighting/ext-lighting-panel/anti-collision") == 1 and getprop("controls/lighting/ext-lighting-panel/master") == 1) {
             setprop("controls/lighting/ext-lighting-panel/anti-collision2",1);
