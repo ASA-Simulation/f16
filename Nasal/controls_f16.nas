@@ -2,6 +2,63 @@
 # Avoid putting Nasal scripts into inputs.xml as people then copy them and put them in their joystick.
 #  And when we change it, they forget to change their joystick, and their aircraft will not work as it should.
 #
+var autoMFDLastWeapon = nil;
+
+var autoMFDForSelectedWeapon = func {
+    if (pylons.fcs == nil) return;
+
+    var wpn = pylons.fcs.getSelectedWeapon();
+    if (wpn == nil) return;
+
+    var wtype = wpn.type;
+
+    # Evita ficar reconfigurando os MFDs a cada frame
+    if (wtype == autoMFDLastWeapon) return;
+    autoMFDLastWeapon = wtype;
+
+    # AIM-120: esquerda FCR/CRM, direita HSD
+    if (wtype == "AIM-120" or wtype == "AIM-ASA-120") {
+        radar_system.apg68Radar.setRootMode(0); # CRM
+
+        setprop("controls/armament/dual", 1);
+        pylons.fcs.updateDual();
+                       
+        displays.leftMFD.system.selectPage("PageFCR");
+        displays.rightMFD.system.selectPage("PageHSD");
+
+        #screen.log.write("AUTO MFD: "~wtype~" -> L FCR/GM | R WPN/CCIP | PAIR", 0.5, 0.5, 1);
+        return;
+    }
+
+    # Bombas: esquerda FCR/GM, direita WPN em CCIP
+    if (wtype == "MK-82" or wtype == "MK-84" or wtype == "GBU-31") {
+        radar_system.apg68Radar.setRootMode(3); # GM
+        pylons.fcs.setDropMode(fc.DROP_CCIP);
+
+        # Lançamento em pares
+        setprop("controls/armament/dual", 2);
+        pylons.fcs.updateDual();
+        
+        displays.leftMFD.system.selectPage("PageFCR");
+        displays.rightMFD.system.selectPage("PageSMSWPN");
+
+        #screen.log.write("AUTO MFD: AIM-120 -> L FCR/CRM | R HSD | SINGLE", 0.5, 0.5, 1);
+        return;
+    }
+};
+
+var autoMFDTick = func {
+    autoMFDForSelectedWeapon();
+
+    # Roda 5 vezes por segundo, leve o bastante
+    settimer(autoMFDTick, 0.2);
+};
+
+var startAutoMFD = func {
+    autoMFDLastWeapon = nil;
+    settimer(autoMFDTick, 1.0);
+};
+
 var emerg_alt = func {
 	if (getprop("payload/armament/msg")==1) {
         screen.log.write("CTRL-U disabled at the moment.");
@@ -157,3 +214,5 @@ controls.applyPickle = func (value) {
         setprop("/controls/armament/trigger", value);
     }
 }
+
+startAutoMFD();
