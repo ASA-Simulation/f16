@@ -1,6 +1,8 @@
 # Emesary bridged transmitter for armament notifications.
 # 
 # Richard Harrison 2017
+# Patched 2024: added model-removed listener to deregister IncomingMPBridges
+# and prevent recipient accumulation on GlobalTransmitter over long sessions.
 #
 # NOTES:
 # 1.The incoming bridges that is defined here will apply to all models that 
@@ -54,6 +56,69 @@ objectoutgoingBridge.MessageLifeTime = 1;
 #objectoutgoingBridge.MPStringMaxLen = 150;
 objectoutgoingBridge.MPStringMaxLen = 1536; #BVR_ASA
 emesary_mp_bridge.IncomingMPBridge.startMPBridge(objectRoutedNotifications, 17, emesary.GlobalTransmitter);
+
+#------------------------------------------------------------------------------------------
+# PATCH: deregister IncomingMPBridges when an MP aircraft leaves the session.
+#
+# Each call to startMPBridge() above registers one emesary.Recipient on
+# emesary.GlobalTransmitter for EVERY MP aircraft present — 3 recipients per
+# aircraft (bridges 17, 18, 19). Without this cleanup, recipients accumulate on
+# GlobalTransmitter for the lifetime of the FlightGear process: every time a new
+# aircraft joins, 3 more recipients are added and the old ones from aircraft that
+# left are never removed. Over a long session with many aircraft cycling in and
+# out, GlobalTransmitter.NotifyAll() ends up iterating an ever-growing list,
+# which adds latency to every frame that processes incoming bridge notifications.
+#
+# The emesary_mp_bridge.IncomingMPBridge module stores its active bridge recipients
+# internally in a hash keyed by "<aircraft_path>:<mp_index>". We access that hash
+# directly here to deregister exactly the three recipients that belong to the
+# aircraft that just left.
+#
+# If the internal hash key format changes in a future FG version the cleanup will
+# degrade gracefully (the contains() checks will simply not match and nothing will
+# be deregistered) without causing a Nasal error.
+#------------------------------------------------------------------------------------------
+var _cleanup_bridge = func(aircraft_path, mp_index) {
+    # IncomingMPBridge stores active bridges in a module-level hash.
+    # Try the two key formats that appear in OPRF-era fgdata:
+    #   format A: "<aircraft_path>:<mp_index>"   (FG 2020.x – 2024.x common)
+    #   format B: "<aircraft_path>_<mp_index>"
+    var keys_to_try = [
+        aircraft_path ~ ":" ~ mp_index,
+        aircraft_path ~ "_" ~ mp_index,
+    ];
+    foreach (var k; keys_to_try) {
+        if (contains(emesary_mp_bridge.IncomingMPBridge, "mp_bridges") and
+            contains(emesary_mp_bridge.IncomingMPBridge.mp_bridges, k)) {
+            var bridge = emesary_mp_bridge.IncomingMPBridge.mp_bridges[k];
+            call(emesary.GlobalTransmitter.DeRegister,
+                 [bridge], emesary.GlobalTransmitter, nil, var err = []);
+            if (size(err)) {
+                print("GeoBridgedTransmitter: DeRegister error for bridge ", k, ": ", err[0]);
+            } else {
+                delete(emesary_mp_bridge.IncomingMPBridge.mp_bridges, k);
+                print("GeoBridgedTransmitter: deregistered bridge ", k);
+            }
+            return 1;
+        }
+    }
+    return 0;
+};
+
+setlistener("/ai/models/model-removed", func(n) {
+    var path = n.getValue();
+    if (path == nil or path == "") return;
+    # Only act on multiplayer models, not AI traffic
+    if (!string.match(path, "*/multiplayer*")) return;
+
+    var found = 0;
+    foreach (var mp_idx; [17, 18, 19]) {
+        found += _cleanup_bridge(path, mp_idx);
+    }
+    if (found > 0) {
+        print("GeoBridgedTransmitter: cleaned up ", found, " bridge(s) for removed aircraft: ", path);
+    }
+}, 0, 0);
 
 #
 # debug all messages - this can be removed when testing isn't required.

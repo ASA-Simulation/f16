@@ -159,7 +159,21 @@ var major = num(version[0]);
 var minor = num(version[1]);
 var pica  = num(version[2]);
 
-var sep_thread = getprop("payload/threading") != nil or !(major == 2020 and minor == 4);#Bug in 2020.4.0 threadsafe properties makes this needed.
+# PATCH (freeze diagnosis): force single-threaded missile mode.
+# In sep_thread mode each missile's flight() loop runs in its own worker thread,
+# doing hundreds of getprop/setprop calls per frame from outside the main thread.
+# The freeze logs show the classic signature of a main-thread lock-up while worker
+# threads were idle-blocked: ALL Nasal output (HUD loop, timerLoop, every missile)
+# stops at the same instant, while pure-C++ threads (TerraSync) keep logging for
+# several more seconds. Every instrumented Nasal section completed cleanly before
+# the freeze, so the deadlock is below Nasal - most plausibly the FG 2024.x
+# property-tree locking interacting with heavy multi-threaded property access.
+# Setting sep_thread=0 uses the supported single-threaded path (maketimer-driven
+# flight loop, see loadNode section), which eliminates that entire class of
+# cross-thread interaction. Slight frame-time cost during multi-missile combat.
+# Original line kept below for easy revert:
+#var sep_thread = getprop("payload/threading") != nil or !(major == 2020 and minor == 4);#Bug in 2020.4.0 threadsafe properties makes this needed.
+var sep_thread = 0;
 
 var wingedGuideFactor = 0.1;
 
@@ -967,8 +981,19 @@ var AIM = {
 			if(getprop("payload/armament/msg") and !me.destroy_notified) {
 				me.destroy_notified = 1;
 				print("notifyInFlight del");
+				# NOTE: unlike every other appendTimer() call in this file, this one was
+				# missing the lockMutex/unlockMutex pair around it. AIM.timerQueue is a
+				# vector shared by every missile's own flight thread plus the main
+				# thread's AIM.timerLoop(); appending to it from here without the lock
+				# is a data race with all of those other appendTimer() calls happening
+				# concurrently during multiplayer combat (this del() can run at any time
+				# a missile is destroyed/expires). An unsynchronized append() racing with
+				# another thread's append() can corrupt the vector, which can then make
+				# AIM.timerLoop()'s foreach over it misbehave on the main thread -> freeze.
+				lockMutex(mutexTimer);
 				appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight,
 					[nil, -1, -1, 0, 0, me.typeID, "delete()", me.unique_id, 0, "", 0, 0, 0, 1], -1]);
+				unlockMutex(mutexTimer);
 			}
 		} else {
 			delete(AIM.active, me.ID);
@@ -4659,8 +4684,18 @@ var AIM = {
 					print("me.unique_id: "~me.unique_id);
 					print("me.reportDist: "~me.reportDist);			
 
+					# me.t_coord can be nil here (e.g. target despawned/disconnected from MP
+					# while the missile was still guiding on it). Evaluating it OUTSIDE the
+					# lock means that if it IS nil, the resulting Nasal runtime error happens
+					# before mutexTimer is ever locked, instead of happening while it's held.
+					# Without this guard, an error here would skip unlockMutex() below and
+					# leave mutexTimer permanently locked -> deadlock -> the whole sim freezes
+					# the next time AIM.timerLoop() (main thread) tries to lock it.
+					var safeTAlt    = (me.t_coord == nil) ? coordinates.alt() : me.t_coord.alt();
+					var safeCourse  = (me.t_coord == nil) ? 0 : coordinates.course_to(me.t_coord);
+
 					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - safeTAlt,range,me.callsign,safeCourse,reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
 
 				} else if(getprop("payload/armament/msg") and hitGround == 1 and wh_mass > 0 and !string.match(me.typeLong, "AIM*")){
@@ -4689,8 +4724,15 @@ var AIM = {
 					print("me.unique_id: "~me.unique_id);
 					print("me.reportDist: "~me.reportDist);			
 
+					# Same nil-safety reasoning as the 'Missile hit target' branch above:
+					# me.t_coord can legitimately be nil here (lost/disconnected target),
+					# so resolve it BEFORE taking mutexTimer to avoid leaving it locked
+					# forever if this throws.
+					var safeTAlt    = (me.t_coord == nil) ? coordinates.alt() : me.t_coord.alt();
+					var safeCourse  = (me.t_coord == nil) ? 0 : coordinates.course_to(me.t_coord);
+
 					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - safeTAlt,range,me.callsign,safeCourse,reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
 
 	                lockMutex(mutexTimer);
