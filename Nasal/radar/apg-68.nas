@@ -310,7 +310,8 @@ var AirborneRadar = {
 		if (me.enabled) {
 			me.focus = me.getPriorityTarget();
 			if (me.focus != nil and me.focus.callsign != "") {
-				if (me.currentMode.painter) sttSend.setValue(left(md5(me.focus.callsign), 4));
+				# Protocolo customizado (sem MD5): transmite o callsign do alvo as claras.
+				if (me.currentMode.painter) sttSend.setValue(me.focus.callsign);
 				else sttSend.setValue("");
 				if (steerpoints.sending == nil) {
 			        datalink.send_data({"contacts":[{"callsign":me.focus.callsign,"iff":0}]});

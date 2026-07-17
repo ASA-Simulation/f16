@@ -1514,7 +1514,9 @@ var processCallsigns = func () {
       }
       callsign_struct[callsign] = player;
       var str6 = player.getNode("sim/multiplay/generic/string[6]");
-      if (str6 != nil and str6.getValue() != nil and str6.getValue() != "" and size(""~str6.getValue())==4 and left(md5(myCallsign),4) == str6.getValue()) {
+      # Protocolo customizado (sem MD5): string[6] carrega o callsign do alvo
+      # as claras (truncado a 7 chars). Basta comparar com o proprio callsign.
+      if (str6 != nil and str6.getValue() != nil and str6.getValue() != "" and (""~str6.getValue()) == myCallsign) {
         painted = 1;
         if (rwr_audio_extended) {
           append(paint_list, getModel(player.getNode("sim/model/path")));

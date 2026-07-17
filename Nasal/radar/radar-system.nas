@@ -1099,7 +1099,11 @@ var AIContact = {
 	},
 
 	isSpikingMe: func {
-		if (me.str6 != nil and me.str6.getValue() != nil and me.str6.getValue() != "" and size(""~me.str6.getValue())==4 and left(md5(self.getCallsign()),4) == me.str6.getValue()) {
+		# Protocolo customizado (sem MD5): string[6] carrega o callsign do alvo
+		# as claras (truncado a 7 chars, igual ao limite do protocolo MP).
+		var myCs = self.getCallsign();
+		myCs = size(myCs) < 8 ? myCs : left(myCs,7);
+		if (me.str6 != nil and me.str6.getValue() != nil and me.str6.getValue() != "" and (""~me.str6.getValue()) == myCs) {
 			return 1;
 		}
 		return 0;

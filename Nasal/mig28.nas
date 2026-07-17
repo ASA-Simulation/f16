@@ -344,7 +344,8 @@ var TopGun = {
 
 		if (!me.blufor and me.a16Range < 70 and math.abs(me.a16Elev)<25 and math.abs(me.a16Clock) < 55) {
 			# Mig28 radar has lock on pilot
-			me.lockNode.setValue(left(md5(getprop("sim/multiplay/callsign")), 4));
+			# Protocolo customizado (sem MD5): callsign as claras, truncado a 7.
+			me.lockNode.setValue(left(getprop("sim/multiplay/callsign"), 7));
 		} else {
 			me.lockNode.setValue("");
 		}
