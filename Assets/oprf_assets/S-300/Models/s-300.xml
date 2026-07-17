@@ -146,7 +146,7 @@
 
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> 3.26307</x-m>
             <y-m>-0.84611</y-m>
@@ -156,7 +156,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> 3.26307</x-m>
             <y-m>-0.84611</y-m>
@@ -166,7 +166,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> 3.26307</x-m>
             <y-m> 0.84611</y-m>
@@ -176,7 +176,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> 3.26307</x-m>
             <y-m> 0.84611</y-m>
@@ -186,7 +186,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -0.80986</x-m>
             <y-m> 0.00064</y-m>
@@ -196,7 +196,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -0.80986</x-m>
             <y-m> 0.00064</y-m>
@@ -206,7 +206,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -3.97300</x-m>
             <y-m> 0.00023</y-m>
@@ -216,7 +216,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -3.97300</x-m>
             <y-m> 0.00023</y-m>
@@ -226,7 +226,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -4.26653</x-m>
             <y-m> -1.82402</y-m>
@@ -236,7 +236,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -4.26653</x-m>
             <y-m> -1.82402</y-m>
@@ -246,7 +246,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -4.26653</x-m>
             <y-m> 1.82402</y-m>
@@ -256,7 +256,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -4.26653</x-m>
             <y-m> 1.82402</y-m>
@@ -266,7 +266,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -0.63979</x-m>
             <y-m> -2.14385</y-m>
@@ -276,7 +276,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -0.63979</x-m>
             <y-m> -2.14385</y-m>
@@ -286,7 +286,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/smoke.xml</path>
+    <path>smoke.xml</path>
     <offsets>
             <x-m> -0.63979</x-m>
             <y-m> 2.14385</y-m>
@@ -296,7 +296,7 @@
   </model>
 
  <model>
-    <path>Aircraft/S-300/Models/fire.xml</path>
+    <path>fire.xml</path>
     <offsets>
             <x-m> -0.63979</x-m>
             <y-m> 2.14385</y-m>
