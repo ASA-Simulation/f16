@@ -16,7 +16,7 @@
     <attach>world</attach> <!-- world / local-->
 
     <placer>
-      <type>point</type>damage.fail_systems(10000);
+      <type>point</type>
     </placer>
     <shooter>
       <theta-min-deg>65</theta-min-deg>
