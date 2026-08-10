@@ -1506,12 +1506,22 @@ var ccrp_loop = func () {
     if (selW.guidance == "unguided") {
     	# TODO: Scour manual to see if unguided can be dropped with CCRP. Also remove lock requirement if they can.
         var dt = 0.1;
-        var maxFallTime = 20;
+        var agl_ug = (getprop("position/altitude-ft")-ccrpTrgt.get_altitude())*FT2M;
+        # vacuum free-fall time as a baseline, plus margin for drag deceleration, with the old 20s as a floor.
+        var maxFallTime = math.max(20, math.sqrt(2*math.max(agl_ug,0)/9.81)*1.5+5);
     } else {
         var agl = (getprop("position/altitude-ft")-ccrpTrgt.get_altitude())*FT2M;
         var dt = agl*0.000025;#4000 ft = ~0.1
         if (dt < 0.1) dt = 0.1;
-        var maxFallTime = 45;
+        # BUGFIX: a fixed 45s cap is too short for guided weapons released from medium/high
+        # altitude (e.g. GBU-31/JDAM, rated up to 45000ft release altitude - see f16-payload.xml).
+        # At those altitudes the true time of fall (with drag) easily exceeds 45s, which made
+        # getCCRPwithTarget() return nil (no solution -> distCCRP=-1) and the CCRP cue/auto-release
+        # never trigger, so the bomb either never auto-released or got released with no valid
+        # solution and missed. Scale the cap with the actual release altitude instead, using the
+        # vacuum free-fall time as a baseline plus margin for drag deceleration, with the old 45s
+        # kept as a floor so low-altitude behaviour is unchanged.
+        var maxFallTime = math.max(45, math.sqrt(2*math.max(agl,0)/9.81)*1.5+10);
     }
 
 	if(ccrpTrgt == nil and selW.Tgt != nil) {
@@ -1519,6 +1529,20 @@ var ccrp_loop = func () {
 	}
 	if(ccrpTrgt != nil and selW.Tgt == nil) {
 		selW.Tgt = ccrpTrgt;
+	}
+	# Same as in HUD_main.nas's CCRP(): make sure every weapon of a dual/pair drop gets the
+	# CCRP point, not just the primary - but feed it via setContacts() rather than forcing
+	# .status, because search() reacts to an externally forced MISSILE_LOCK by calling
+	# return_to_search(), which nulls Tgt.
+	if (ccrpTrgt != nil) {
+		foreach (var dualW; pylons.fcs.getSelectedDualWeapons()) {
+			if (dualW != nil and dualW.status != armament.MISSILE_FLYING) {
+				dualW.setContacts([ccrpTrgt]);
+				if (dualW.Tgt == nil) {
+					dualW.Tgt = ccrpTrgt;
+				}
+			}
+		}
 	}
 
     var distCCRP = selW.getCCRPwithTarget(maxFallTime,dt,ccrpTrgt);

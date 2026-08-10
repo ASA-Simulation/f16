@@ -159,21 +159,16 @@ var major = num(version[0]);
 var minor = num(version[1]);
 var pica  = num(version[2]);
 
-# PATCH (freeze diagnosis): force single-threaded missile mode.
-# In sep_thread mode each missile's flight() loop runs in its own worker thread,
-# doing hundreds of getprop/setprop calls per frame from outside the main thread.
-# The freeze logs show the classic signature of a main-thread lock-up while worker
-# threads were idle-blocked: ALL Nasal output (HUD loop, timerLoop, every missile)
-# stops at the same instant, while pure-C++ threads (TerraSync) keep logging for
-# several more seconds. Every instrumented Nasal section completed cleanly before
-# the freeze, so the deadlock is below Nasal - most plausibly the FG 2024.x
-# property-tree locking interacting with heavy multi-threaded property access.
-# Setting sep_thread=0 uses the supported single-threaded path (maketimer-driven
-# flight loop, see loadNode section), which eliminates that entire class of
-# cross-thread interaction. Slight frame-time cost during multi-missile combat.
-# Original line kept below for easy revert:
-#var sep_thread = getprop("payload/threading") != nil or !(major == 2020 and minor == 4);#Bug in 2020.4.0 threadsafe properties makes this needed.
-var sep_thread = 0;
+# BUGFIX/MITIGATION: sep_thread is forced to 0 here. The upstream expression below evaluates
+# to 1 on FlightGear 2024.x, which runs each weapon's flight loop on its own Nasal thread.
+# On 2024.x that causes a main-thread deadlock in the C++ property tree: all Nasal output
+# stops dead while the C++ terrain/terrasync/network threads keep logging normally, and the
+# sim freezes. Releasing a PAIR of weapons is the worst case, since it spawns two weapon
+# threads in the same frame. Forcing 0 runs the flight loop single-threaded via maketimer,
+# which is the reliable mitigation.
+# Original upstream line, kept for reference:
+#   var sep_thread = getprop("payload/threading") != nil or !(major == 2020 and minor == 4);
+var sep_thread = 0;#Bug in 2020.4.0 threadsafe properties makes this needed.
 
 var wingedGuideFactor = 0.1;
 
@@ -981,19 +976,8 @@ var AIM = {
 			if(getprop("payload/armament/msg") and !me.destroy_notified) {
 				me.destroy_notified = 1;
 				print("notifyInFlight del");
-				# NOTE: unlike every other appendTimer() call in this file, this one was
-				# missing the lockMutex/unlockMutex pair around it. AIM.timerQueue is a
-				# vector shared by every missile's own flight thread plus the main
-				# thread's AIM.timerLoop(); appending to it from here without the lock
-				# is a data race with all of those other appendTimer() calls happening
-				# concurrently during multiplayer combat (this del() can run at any time
-				# a missile is destroyed/expires). An unsynchronized append() racing with
-				# another thread's append() can corrupt the vector, which can then make
-				# AIM.timerLoop()'s foreach over it misbehave on the main thread -> freeze.
-				lockMutex(mutexTimer);
 				appendTimer(AIM.timerQueue, [AIM, AIM.notifyInFlight,
 					[nil, -1, -1, 0, 0, me.typeID, "delete()", me.unique_id, 0, "", 0, 0, 0, 1], -1]);
-				unlockMutex(mutexTimer);
 			}
 		} else {
 			delete(AIM.active, me.ID);
@@ -1047,11 +1031,24 @@ var AIM = {
         me.ccrp_rho = me.ccrp_rs[0];
         me.ccrp_Cd = me.drag(me.ccrp_mach);
         me.ccrp_mass = me.weight_launch_lbm * LBM2SLUGS;
-        me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_z * me.ccrp_fps_z;
-        me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
-
+        # BUGFIX: me.ccrp_deacc used to be computed ONCE here, from the INITIAL me.ccrp_fps_z
+        # (vertical speed at release, near-zero in level flight) - then reused unchanged on
+        # every iteration of the fall loop below, even as me.ccrp_vel_z grows throughout the
+        # fall. Since aerodynamic drag scales with v^2, this froze vertical drag at ~0 for the
+        # entire simulated fall, making the predicted fall time (and therefore the predicted
+        # forward travel distance/release point) consistently SHORTER than reality. The real
+        # bomb, which does experience real drag as it speeds up, stays airborne longer than
+        # predicted and travels further forward than the CCRP solution assumed - landing LONG
+        # past the target even when released exactly on the cue. Recompute drag every
+        # iteration from the current vertical speed instead (mirrors what the horizontal pass
+        # below already does via averaging).
         while (me.ccrp_altC > 0 and me.ccrp_t <= maxFallTime_sec) {
           me.ccrp_t += timeStep;
+          me.ccrp_fps_z = me.ccrp_vel_z * M2FT;
+          me.ccrp_mach_z = math.abs(me.ccrp_fps_z) / me.ccrp_rs[1];
+          me.ccrp_Cd = me.drag(me.ccrp_mach_z);
+          me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_z * me.ccrp_fps_z;
+          me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
           me.ccrp_acc = -9.81 + me.ccrp_deacc * FT2M;
           me.ccrp_vel_z += me.ccrp_acc * timeStep;
           me.ccrp_altC = me.ccrp_altC + me.ccrp_vel_z*timeStep+0.5*me.ccrp_acc*timeStep*timeStep;
@@ -1087,7 +1084,28 @@ var AIM = {
         me.ccrp_elev = me.ccrp_alti-me.ccrp_agl;#faster
         me.ccrpPos.set_alt(me.ccrp_elev);
 
-        me.ccrp_distCCRP = me.ccrpPos.distance_to(me.Tgt.get_Coord());
+        # BUGFIX: this used to be the raw scalar distance from the predicted impact point to
+        # the target: me.ccrpPos.distance_to(me.Tgt.get_Coord()). distance_to() is UNSIGNED and
+        # omnidirectional, so it mixed the ALONG-TRACK error (how early/late the release is -
+        # the thing the vertical solution cue is supposed to show) together with the CROSS-TRACK
+        # error (lateral offset - which the HUD already shows separately by sliding the whole
+        # line left/right via me.ldr). Consequences:
+        #   1. The value bottoms out at the point of closest approach and grows again as the
+        #      predicted impact sweeps past the target, so the cue descends toward the reference
+        #      line, turns around, and climbs back up.
+        #   2. That minimum only reaches ~0 if the predicted impact passes exactly through the
+        #      target. ANY residual lateral offset leaves a floor equal to the cross-track miss,
+        #      so the two lines never actually meet and the pilot never sees a release instant.
+        # Use only the along-track component (projected onto the ground track) instead. Keeping
+        # it as an absolute value preserves the semantics the rest of the code relies on -
+        # notably the auto-release in fire-control.nas trigger(), which fires on the turnaround
+        # (distCCRP >= distCCRPLast) - while letting the value genuinely reach zero at the
+        # correct release instant regardless of small lateral offsets.
+        me.ccrp_tgtCoord = me.Tgt.get_Coord();
+        me.ccrp_tgtBearing = me.ccrp_ac.course_to(me.ccrp_tgtCoord);
+        me.ccrp_tgtRange = me.ccrp_ac.distance_to(me.ccrp_tgtCoord);
+        me.ccrp_alongTrack = me.ccrp_tgtRange * math.cos((me.ccrp_tgtBearing - me.ccrp_heading)*D2R);
+        me.ccrp_distCCRP = math.abs(me.ccrp_alongTrack - me.ccrp_dist);
         return me.ccrp_distCCRP;
 	},
 
@@ -1156,11 +1174,24 @@ var AIM = {
         me.ccrp_rho = me.ccrp_rs[0];
         me.ccrp_Cd = me.drag(me.ccrp_mach);
         me.ccrp_mass = me.weight_launch_lbm * LBM2SLUGS;
-        me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_z * me.ccrp_fps_z;
-        me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
-
+        # BUGFIX: me.ccrp_deacc used to be computed ONCE here, from the INITIAL me.ccrp_fps_z
+        # (vertical speed at release, near-zero in level flight) - then reused unchanged on
+        # every iteration of the fall loop below, even as me.ccrp_vel_z grows throughout the
+        # fall. Since aerodynamic drag scales with v^2, this froze vertical drag at ~0 for the
+        # entire simulated fall, making the predicted fall time (and therefore the predicted
+        # forward travel distance/release point) consistently SHORTER than reality. The real
+        # bomb, which does experience real drag as it speeds up, stays airborne longer than
+        # predicted and travels further forward than the CCRP solution assumed - landing LONG
+        # past the target even when released exactly on the cue. Recompute drag every
+        # iteration from the current vertical speed instead (mirrors what the horizontal pass
+        # below already does via averaging).
         while (me.ccrp_altC > 0 and me.ccrp_t <= maxFallTime_sec) {
           me.ccrp_t += timeStep;
+          me.ccrp_fps_z = me.ccrp_vel_z * M2FT;
+          me.ccrp_mach_z = math.abs(me.ccrp_fps_z) / me.ccrp_rs[1];
+          me.ccrp_Cd = me.drag(me.ccrp_mach_z);
+          me.ccrp_q = 0.5 * me.ccrp_rho * me.ccrp_fps_z * me.ccrp_fps_z;
+          me.ccrp_deacc = (me.ccrp_Cd * me.ccrp_q * me.ref_area_sqft) / me.ccrp_mass;
           me.ccrp_acc = -9.81 + me.ccrp_deacc * FT2M;
           me.ccrp_vel_z += me.ccrp_acc * timeStep;
           me.ccrp_altC = me.ccrp_altC + me.ccrp_vel_z*timeStep+0.5*me.ccrp_acc*timeStep*timeStep;
@@ -1196,7 +1227,28 @@ var AIM = {
         me.ccrp_elev = me.ccrp_alti-me.ccrp_agl;#faster
         me.ccrpPos.set_alt(me.ccrp_elev);
 
-        me.ccrp_distCCRP = me.ccrpPos.distance_to(me.Tgt.get_Coord());
+        # BUGFIX: this used to be the raw scalar distance from the predicted impact point to
+        # the target: me.ccrpPos.distance_to(me.Tgt.get_Coord()). distance_to() is UNSIGNED and
+        # omnidirectional, so it mixed the ALONG-TRACK error (how early/late the release is -
+        # the thing the vertical solution cue is supposed to show) together with the CROSS-TRACK
+        # error (lateral offset - which the HUD already shows separately by sliding the whole
+        # line left/right via me.ldr). Consequences:
+        #   1. The value bottoms out at the point of closest approach and grows again as the
+        #      predicted impact sweeps past the target, so the cue descends toward the reference
+        #      line, turns around, and climbs back up.
+        #   2. That minimum only reaches ~0 if the predicted impact passes exactly through the
+        #      target. ANY residual lateral offset leaves a floor equal to the cross-track miss,
+        #      so the two lines never actually meet and the pilot never sees a release instant.
+        # Use only the along-track component (projected onto the ground track) instead. Keeping
+        # it as an absolute value preserves the semantics the rest of the code relies on -
+        # notably the auto-release in fire-control.nas trigger(), which fires on the turnaround
+        # (distCCRP >= distCCRPLast) - while letting the value genuinely reach zero at the
+        # correct release instant regardless of small lateral offsets.
+        me.ccrp_tgtCoord = me.Tgt.get_Coord();
+        me.ccrp_tgtBearing = me.ccrp_ac.course_to(me.ccrp_tgtCoord);
+        me.ccrp_tgtRange = me.ccrp_ac.distance_to(me.ccrp_tgtCoord);
+        me.ccrp_alongTrack = me.ccrp_tgtRange * math.cos((me.ccrp_tgtBearing - me.ccrp_heading)*D2R);
+        me.ccrp_distCCRP = math.abs(me.ccrp_alongTrack - me.ccrp_dist);
         return me.ccrp_distCCRP;
 	},
 
@@ -1771,7 +1823,16 @@ var AIM = {
 			if (me.Tgt == contactPoint) {
 				me.usingTGPPoint = 1;
 			}
-			me.t_coord = me.Tgt.get_Coord();
+			# BUGFIX: this used to be me.t_coord = me.Tgt.get_Coord(), which stores the
+			# SHARED object reference - ContactTGP.get_Coord() returns its internal me.coord
+			# rather than a copy. When a pair of weapons is released against the same TGP/GPS
+			# point, both weapons' me.t_coord then alias the exact same geo.Coord instance.
+			# The flight loop already guards against this (see the geo.Coord.new() call and its
+			# "in case multiple missiles use same Tgt we cannot rely on coords being different"
+			# comment), but that guard is explicitly skipped for gps guidance - which is what
+			# the GBU-31 uses - so a GPS-guided pair never gets its own copy anywhere. Take the
+			# copy here at release time instead, which covers every guidance type.
+			me.t_coord = geo.Coord.new(me.Tgt.get_Coord());
 			me.maddog = 0;
 			me.newTargetAssigned = 1;
 		} else {
@@ -4684,18 +4745,8 @@ var AIM = {
 					print("me.unique_id: "~me.unique_id);
 					print("me.reportDist: "~me.reportDist);			
 
-					# me.t_coord can be nil here (e.g. target despawned/disconnected from MP
-					# while the missile was still guiding on it). Evaluating it OUTSIDE the
-					# lock means that if it IS nil, the resulting Nasal runtime error happens
-					# before mutexTimer is ever locked, instead of happening while it's held.
-					# Without this guard, an error here would skip unlockMutex() below and
-					# leave mutexTimer permanently locked -> deadlock -> the whole sim freezes
-					# the next time AIM.timerLoop() (main thread) tries to lock it.
-					var safeTAlt    = (me.t_coord == nil) ? coordinates.alt() : me.t_coord.alt();
-					var safeCourse  = (me.t_coord == nil) ? 0 : coordinates.course_to(me.t_coord);
-
 					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - safeTAlt,range,me.callsign,safeCourse,reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
 
 				} else if(getprop("payload/armament/msg") and hitGround == 1 and wh_mass > 0 and !string.match(me.typeLong, "AIM*")){
@@ -4724,15 +4775,8 @@ var AIM = {
 					print("me.unique_id: "~me.unique_id);
 					print("me.reportDist: "~me.reportDist);			
 
-					# Same nil-safety reasoning as the 'Missile hit target' branch above:
-					# me.t_coord can legitimately be nil here (lost/disconnected target),
-					# so resolve it BEFORE taking mutexTimer to avoid leaving it locked
-					# forever if this throws.
-					var safeTAlt    = (me.t_coord == nil) ? coordinates.alt() : me.t_coord.alt();
-					var safeCourse  = (me.t_coord == nil) ? 0 : coordinates.course_to(me.t_coord);
-
 					lockMutex(mutexTimer);
-					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - safeTAlt,range,me.callsign,safeCourse,reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
+					appendTimer(AIM.timerQueue, [AIM, AIM.notifyHit, [coordinates.alt() - me.t_coord.alt(),range,me.callsign,coordinates.course_to(me.t_coord),reason,me.typeID, me.typeLong, 0, me.unique_id], -1]);
 					unlockMutex(mutexTimer);
 
 	                lockMutex(mutexTimer);

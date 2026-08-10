@@ -3112,6 +3112,28 @@ append(obj.total, obj.speed_curr);
                 selW.Tgt = trgt;
                 selW.status = armament.MISSILE_LOCK;
 
+                # Lock every weapon of a dual/pair drop onto the same CCRP point, not just the
+                # primary. Note we deliberately do NOT force .status = MISSILE_LOCK here.
+                # Forcing the status from outside is self-defeating: each weapon runs its own
+                # self-rescheduling search() timer (~20Hz), and search() has a branch
+                #     elsif (me.status == MISSILE_LOCK) { ... me.return_to_search(); }
+                # for "in search loop, but locked!" - and return_to_search() sets me.Tgt = nil.
+                # So an externally forced lock gets torn down, together with the target we just
+                # assigned, up to 20 times a second, making it a coin flip whether the weapon
+                # still holds a target at the instant release() runs. Instead feed the point in
+                # through setContacts(), the API the code documents for exactly this ("sets a
+                # vector of contacts the weapons will try to lock onto"), and let each weapon
+                # reach MISSILE_LOCK through its own goToLock() path, which assigns Tgt and
+                # hands off to update_lock() to hold it.
+                foreach (me.dualW; pylons.fcs.getSelectedDualWeapons()) {
+                    if (me.dualW != nil and me.dualW.status != armament.MISSILE_FLYING) {
+                        me.dualW.setContacts([trgt]);
+                        if (me.dualW.Tgt == nil) {
+                            me.dualW.Tgt = trgt;
+                        }
+                    }
+                }
+
                 #print("Target locked: Lat:"~trgt.get_Coord().lat()~" Lon:"~trgt.get_Coord().lon()~" Alt:"~trgt.get_Coord().alt());
 
                 # Set the FG Program Target
@@ -3140,18 +3162,28 @@ append(obj.total, obj.speed_curr);
                 if (me.distCCRP > 0.75) {
                     me.distCCRP = 0.75;
                 }
-                me.ldr = trgt.getLastAZDeviation();
-                if (me.ldr == nil) {
-                    me.blepCoord = trgt.get_Coord();
-                    if (trgt == armament.contactPoint and me.blepCoord != nil) {
-                        me.blepHeading = radar_system.self.getCoord().course_to(me.blepCoord);
-                        me.ldr = geo.normdeg180(me.blepHeading-radar_system.self.getHeading());
-                    } else {
-                        me.solutionCue.hide();
-                        me.ccrpMarker.hide();
-                        me.bombFallLine.hide();
-                        return 1;
-                    }
+                # BUGFIX: the CCRP bomb-fall line/cue must be drawn relative to the aircraft's
+                # actual GROUND TRACK (the same reference frame getCCRPwithTarget() uses
+                # internally, which projects the impact point from velocities/speed-east-fps and
+                # velocities/speed-north-fps), not relative to the nose HEADING.
+                # trgt.getLastAZDeviation() (ContactTGP.get_relative_bearing()) - and the old
+                # fallback below it - both compared bearing-to-target against
+                # orientation/heading-deg, which only equals ground track with zero wind/drift/
+                # crab. With any wind, the pilot can align the FPM perfectly on the displayed
+                # line and still have a real lateral ground-track miss that the ballistic
+                # calculation picks up, so distCCRP (and therefore solutionCue) never converges
+                # down onto ccrpMarker - this is what showed up as the sight never "locking on"
+                # the target. Always recompute bearing-to-target fresh and compare it to
+                # orientation/track-deg instead.
+                me.blepCoord = trgt.get_Coord();
+                if (me.blepCoord != nil) {
+                    me.blepHeading = radar_system.self.getCoord().course_to(me.blepCoord);
+                    me.ldr = geo.normdeg180(me.blepHeading-getprop("orientation/track-deg"));
+                } else {
+                    me.solutionCue.hide();
+                    me.ccrpMarker.hide();
+                    me.bombFallLine.hide();
+                    return 1;
                 }
                 me.bombFallLine.setTranslation(me.ldr*me.texelPerDegreeX,0);
                 me.ccrpMarker.setTranslation(me.ldr*me.texelPerDegreeX,0);
