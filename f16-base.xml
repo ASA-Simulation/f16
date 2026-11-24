@@ -1220,6 +1220,8 @@
                 <flare-release-cmd type="bool">false</flare-release-cmd>
                 <flare-auto-release-cmd type="double">0</flare-auto-release-cmd>
                 <flare-release type="bool">false</flare-release>
+                <flare-release-l type="bool">false</flare-release-l> <!-- gatilho do submodelo flaresL (1 pulso = 1 chaff) -->
+                <flare-release-r type="bool">false</flare-release-r> <!-- gatilho do submodelo flaresR (1 pulso = 1 chaff) -->
                 <flare-release-snd type="bool">false</flare-release-snd>
                 <flare-release-out-snd type="bool">false</flare-release-out-snd>
             </submodel>

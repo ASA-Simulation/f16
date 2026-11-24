@@ -93,7 +93,7 @@ var loop_freqDsply = func {# one line is max 24 chars
     setprop("f16/avionics/cmds-fl-switch",EWMU_disp);
 
     # Display stuff
-    var flareCount = sprintf("%03d",getprop("ai/submodels/submodel[0]/count"));
+    var flareCount = sprintf("%03d",getprop("f16/ews/chaff-count"));
     var chaffCount = flareCount;
     var EWMU_knob = getprop("f16/ews/ew-mode-knob");#0, 1, 2
     var EWMU_jmr = getprop("f16/ews/ew-jmr-switch");    

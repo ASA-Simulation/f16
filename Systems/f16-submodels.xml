@@ -5,11 +5,11 @@
   <submodel>
     <name>flaresL</name>
     <model>Aircraft/f16/Models/Effects/flare/flare.xml</model>
-    <trigger>ai/submodels/submodel[0]/flare-release</trigger>
+    <trigger>ai/submodels/submodel[0]/flare-release-l</trigger>
     <speed>75.0</speed>   <!-- ft/sec -->
-    <repeat>true</repeat>
-    <delay>0.07</delay>
-    <count>100</count>
+    <repeat>false</repeat> <!-- 1 modelo por pulso do gatilho (o FG volta o gatilho para false) -->
+    <delay>0.0</delay>
+    <count>-1</count> <!-- so efeito visual: 1 modelo por chaff do contador f16/ews/chaff-count (f16.nas) -->
     <offsets>
         <x-m>  3.25</x-m>
         <y-m> -0.911</y-m>
@@ -209,11 +209,11 @@
   <submodel>
     <name>flaresR</name>
     <model>Aircraft/f16/Models/Effects/flare/flare.xml</model>
-    <trigger>ai/submodels/submodel[0]/flare-release</trigger>
+    <trigger>ai/submodels/submodel[0]/flare-release-r</trigger>
     <speed>68.0</speed>   <!-- ft/sec -->
-    <repeat>true</repeat>
-    <delay>0.07</delay>
-    <count>100</count>
+    <repeat>false</repeat> <!-- 1 modelo por pulso do gatilho (o FG volta o gatilho para false) -->
+    <delay>0.0</delay>
+    <count>-1</count> <!-- so efeito visual: 1 modelo por chaff do contador f16/ews/chaff-count (f16.nas) -->
     <offsets>
         <x-m>  3.25</x-m>
         <y-m>  0.911</y-m>

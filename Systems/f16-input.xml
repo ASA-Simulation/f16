@@ -444,7 +444,7 @@
         </key>
         <key n="113">
             <name>q</name>
-            <desc>Trigger flare release</desc>
+            <desc>Trigger chaff program (f16.nas: CHAFF_SALVO_QTY salvos x CHAFF_BURST_QTY; 1st cartridge of each salvo goes to the network)</desc>
             <binding>
                 <command>property-assign</command>
                 <property>/ai/submodels/submodel[0]/flare-release-cmd</property>

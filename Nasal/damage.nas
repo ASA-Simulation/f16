@@ -354,7 +354,12 @@ var DamageRecipient =
                   lastSeenTacObject[tacID] = elapsed;
                   if (notification.Kind == MOVE) {
                     var target = ",Color=Red";                  
-                    if (wh=="Flare") wh=wh~",Type=Flare";
+                    if (wh=="Flare" and TREAT_KIND_116_AS_CHAFF) {
+                      # SecondaryKind 116 = chaff (tecla "q" do F-16)
+                      wh = "Chaff,Type="~CHAFF_TACVIEW_TYPE;
+                    } elsif (wh=="Flare") {
+                      wh=wh~",Type=Flare";
+                    }
                     var content = sprintf("%s,T=%.6f|%.6f|%.2f|0|%.1f|%.1f,TAS=%.2f,AOA=0,Visible=1,Name=%s,%s\n",tacID,notification.Position.lon(),notification.Position.lat(),notification.Position.alt(),0,0,0,wh,target);
                     thread.lock(tacview.mutexWrite);
                     tacview.write("#" ~ (systime() - tacview.starttime)~"\n");
@@ -369,7 +374,9 @@ var DamageRecipient =
                 }
 
                 if (notification.Kind == MOVE) {
-                  if (thrustOn or index == warheads["pilot"][0] or index == warheads["Flare"][0]) {
+                  if (TREAT_KIND_116_AS_CHAFF and index == warheads["Flare"][0]) {
+                    # chaff: sem efeito visual de flare (so registro no tacview)
+                  } elsif (thrustOn or index == warheads["pilot"][0] or index == warheads["Flare"][0]) {
                     # visualize missile smoke trail
 
                       var smoke = 1;
@@ -1004,6 +1011,22 @@ dynamic_loop();
 #==================================================================
 #                       Flares over MP
 #==================================================================
+#
+# CHAFF (ASA): a tecla "q" dispara o programa de chaff (f16.nas). O 1o
+# cartucho de CADA SALVO vira mensagem de rede: ObjectInFlightNotification
+# (bridge 17) com SecondaryKind 116 (= typeID 95 "Flare" + 21). O asa-fg
+# interpreta 116 como chaff e cria a entidade DIS [ 8 2 225 1 0 0 0 ]
+# (AsaChaff) no ASA -- uma por salvo.
+#
+var CHAFF_TYPE_ID = warheads["Flare"][0];                                   # 95
+var CHAFF_SECONDARY_KIND = DamageRecipient.typeID2emesaryID(CHAFF_TYPE_ID); # 116
+var CHAFF_TACVIEW_TYPE = "Misc+Decoy+Chaff";
+var TREAT_KIND_116_AS_CHAFF = 1;   # SecondaryKind 116 recebido = chaff
+# Modelo fisico do chaff (mesmos valores de AsaChaff::DEFAULT_*, no ASA):
+#   horizontal: dv/dt = -k*|v|*v     (perde velocidade rapidamente)
+#   vertical  : cai ate a velocidade terminal chaff_fall_speed
+var chaff_horiz_drag = 0.003; # 1/m
+var chaff_fall_speed = 25.0;  # m/s
 
 var last_prop = 0;
 var last_release = 0;
@@ -1038,22 +1061,30 @@ var animate_flare = func {
       msg.IsDistinct = 1;
       msg.UniqueIndex = flare[6];
       notifications.objectBridgedTransmitter.NotifyAll(msg);
-      recordOwnFlare(msg);
+      recordOwnFlare(msg, flare[7]);
       continue;
     }
     if (flares_sent < flares_max_process_per_loop) {
       var flare_dt = stime-flare[0];
+      if (flare[7]) {
+        # chaff: perde velocidade e cai (mesmo modelo do AsaChaff)
+        var st = chaff_step(flare[4], flare[5], flare_dt);
+        flare[2].apply_course_distance(flare[3], st[2]);
+        flare[2].set_alt(flare[2].alt()-st[3]);
+        flare = [stime, flare[1], flare[2], flare[3], st[0], st[1], flare[6], flare[7]];
+      } else {
       #       update_t,start_t, coord,    heading,  speed_down_mps,                                                                   , speed_horiz_mps,                  unique
-      flare = [stime, flare[1], flare[2], flare[3], (flare[4]<flare_terminal_speed)?(flare[4]+flare_dt*9.83*0.5):(flare[4]-flare_dt*3), math.max(0,flare[5]-flare_dt*20), flare[6]];
+      flare = [stime, flare[1], flare[2], flare[3], (flare[4]<flare_terminal_speed)?(flare[4]+flare_dt*9.83*0.5):(flare[4]-flare_dt*3), math.max(0,flare[5]-flare_dt*20), flare[6], flare[7]];
       flare[2].apply_course_distance(flare[3], flare_dt*flare[5]);
       flare[2].set_alt(flare[2].alt()-flare_dt*flare[4]);
+      }
 
       var msg = notifications.ObjectInFlightNotification.new("ffly", flare[6], MOVE, DamageRecipient.typeID2emesaryID(warheads["Flare"][0]));
       msg.Position = flare[2];
       msg.IsDistinct = 1;
       msg.UniqueIndex = flare[6];
       notifications.objectBridgedTransmitter.NotifyAll(msg);
-      recordOwnFlare(msg);
+      recordOwnFlare(msg, flare[7]);
       flares_sent += 1;
     }
     append(old_flares, flare);
@@ -1079,13 +1110,25 @@ var auto_flare_released = func {
 
 var flare_released = func {
     # We released a flare. If you call this method manually, then make sure 'auto_flare_caller' is false.
+    cm_released(0);
+}
+
+var chaff_released = func {
+    # Chaff (tecla "q"): chamado UMA vez por salvo (1o cartucho de cada salvo).
+    # SecondaryKind 116 -> asa-fg -> DIS [ 8 2 225 1 0 0 0 ] (AsaChaff).
+    cm_released(1);
+}
+
+var cm_released = func (is_chaff) {
     var stime = systime();
+    #           update_t,start_t, coord,    heading,  speed_down_mps, speed_horiz_mps, unique, is_chaff
     var flare =[stime, stime,
                 geo.aircraft_position(),
                 getprop("orientation/heading-deg"),
                 FT2M*getprop("velocities/speed-down-fps"),
                 FT2M*math.sqrt(getprop("velocities/speed-north-fps")*getprop("velocities/speed-north-fps")+getprop("velocities/speed-east-fps")*getprop("velocities/speed-east-fps")),
-                flare_sequencer];
+                flare_sequencer,
+                is_chaff];
     flare_sequencer += 1;
     if (flare_sequencer > 120) flare_sequencer = -120;
     append(flare_list, flare);
@@ -1094,10 +1137,30 @@ var flare_released = func {
     msg.IsDistinct = 1;
     msg.UniqueIndex = flare[6];
     notifications.objectBridgedTransmitter.NotifyAll(msg);
-    recordOwnFlare(msg);
+    recordOwnFlare(msg, is_chaff);
 }
 
-var recordOwnFlare = func (msg) {
+# Integra o chaff por dt segundos.
+# Retorna [speed_down_mps, speed_horiz_mps, dist_horiz_m, dist_down_m]
+var chaff_step = func (vd, vh, dt) {
+    var g = 9.80665;
+    var kv = g/(chaff_fall_speed*chaff_fall_speed);
+    var n = int(dt/0.02) + 1;
+    var h = dt/n;
+    var dh = 0;
+    var dd = 0;
+    for (var i = 0; i < n; i += 1) {
+        var vh1 = vh/(1+chaff_horiz_drag*vh*h);
+        var vd1 = (vd + g*h)/(1+kv*math.abs(vd)*h);
+        dh += 0.5*(vh+vh1)*h;
+        dd += 0.5*(vd+vd1)*h;
+        vh = vh1;
+        vd = vd1;
+    }
+    return [vd, vh, dh, dd];
+}
+
+var recordOwnFlare = func (msg, is_chaff = 0) {
     if (tacview_supported) {
       if (tacview.starttime) {
         var tacID = left(md5("ownShip"~msg.UniqueIndex),6);
@@ -1111,6 +1174,11 @@ var recordOwnFlare = func (msg) {
           var extra = "";
           var extra2 = ",Type=Flare";
           var color = ",Color=Yellow";
+          if (is_chaff) {
+            typp = "Chaff";
+            extra2 = ",Type="~CHAFF_TACVIEW_TYPE;
+            color = "";
+          }
           thread.lock(tacview.mutexWrite);
           tacview.write("#" ~ (systime() - tacview.starttime)~"\n");
           tacview.write(tacID~",T="~msg.Position.lon()~"|"~msg.Position.lat()~"|"~msg.Position.alt()~extra~",Name="~typp~color~extra2~"\n");

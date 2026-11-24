@@ -885,7 +885,7 @@ var dataEntryDisplay = {
 	},
 
 	updateEWS: func() {
-		var flares = getprop("ai/submodels/submodel[0]/count");
+		var flares = getprop("f16/ews/chaff-count");
 		var jammer = getprop("f16/ews/ew-jmr-switch") ? " ON" : "OFF";
 		me.text[0] = sprintf("       EWS CONTROLS  %s",me.no);
 		me.text[1] = sprintf(" CH %3d     REQJAM   %s", flares, jammer);

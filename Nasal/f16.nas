@@ -256,18 +256,53 @@ var RWRView = func () {
 dynamic_view.register(func {me.default_plane();});
 
 var LOOP_MEDIUM_FAST_RATE = 0.1;
-var FLARE_BURST_INTERVAL = 0.07;   # 0,07s interval between flares
-var FLARE_BURST_COUNT    = 30;     # 15 pais of each dispenser
+# ---------------------------------------------------------------------------
+# CHAFF (tecla "q") -- carga e programa de lancamento (estilo ALE-47)
+#
+#   Carga: CHAFF_DISPENSERS dispensadores x CHAFF_PER_DISPENSER cartuchos
+#          = 30 chaffs (1 dispensador cheio).
+#
+#   Programa (cada toque no "q"):
+#     CHAFF_SALVO_QTY salvos, separados por CHAFF_SALVO_INTERVAL s;
+#     cada salvo = CHAFF_BURST_QTY cartuchos, separados por CHAFF_BURST_INTERVAL s,
+#     alternando esquerda/direita.
+#     Padrao: 3 salvos x 2 cartuchos (1 esq + 1 dir) = 6 chaffs por toque
+#             (3 de cada lado) em ~1,5 s  ->  30 / 6 = 5 toques por voo.
+#
+#   Rede (ASA): o 1o cartucho de CADA SALVO vira uma mensagem de rede
+#   (ObjectInFlightNotification, SecondaryKind 116 -> asa-fg -> DIS
+#   [ 8 2 225 1 0 0 0 ] -> AsaChaff). Ou seja, 1 toque = 3 nuvens no ASA,
+#   cada uma com seu proprio sorteio (o AsaChaff reduz a probabilidade a cada
+#   nova nuvem contra o mesmo missil: slot repeatDecay).
+#
+#   O contador fica em f16/ews/chaff-count (DED/CMDS), 1 por cartucho.
+#   Os submodelos flaresL/flaresR (f16-submodels.xml) sao so o efeito visual:
+#   1 modelo por cartucho. Recarga: f16.reloadCannon() (presets de armamento).
+# ---------------------------------------------------------------------------
+var CHAFF_DISPENSERS     = 1;
+var CHAFF_PER_DISPENSER  = 30;
+var CHAFF_LOAD           = CHAFF_DISPENSERS * CHAFF_PER_DISPENSER;   # 30
+
+var CHAFF_BURST_QTY      = 2;      # cartuchos por salvo (alterna esq/dir)
+var CHAFF_BURST_INTERVAL = 0.05;   # s entre cartuchos do mesmo salvo
+var CHAFF_SALVO_QTY      = 3;      # salvos por toque no "q"
+var CHAFF_SALVO_INTERVAL = 0.75;   # s entre salvos (vida util da nuvem ~1-2 s)
+
+# TESTE: chaff infinito. 1 = o contador e reabastecido para CHAFF_LOAD antes de
+# cada toque, entao nunca acaba. 0 = normal (acaba e precisa recarregar).
+var CHAFF_INFINITE       = 0;
 
 var medium_fast = {
     flareCount: -1,
     flareStart: -1,
 
-    # new state of flare dispensers
+    # estado do programa de chaff
     flareBurstActive: 0,
-    flareBurstRemaining: 0,
     flareBurstTimer: nil,
-    flareNetSent: 0,
+    cmSalvoLeft: 0,      # salvos que ainda faltam (incluindo o atual)
+    cmBurstLeft: 0,      # cartuchos que ainda faltam no salvo atual
+    cmNextFire: 0,       # sim/time/elapsed-sec do proximo cartucho
+    cmCartridge: 0,      # indice do cartucho no toque (par = esq, impar = dir)
 
     init: func {
         me.aar_disc_timer = maketimer(3, func() { setprop("controls/lighting/ar-nws", 3); } );
@@ -277,49 +312,104 @@ var medium_fast = {
         me.loop();
         me.timer.start();
 
-        # timer of a full dispenser release (15 pairs - 0,07s interval)
-        me.flareBurstTimer = maketimer(FLARE_BURST_INTERVAL, me, func me.flareBurstLoop());
+        # timer do programa: roda no passo do burst; os intervalos entre
+        # salvos sao controlados por cmNextFire
+        me.flareBurstTimer = maketimer(CHAFF_BURST_INTERVAL, me, func me.flareBurstLoop());
         me.flareBurstTimer.singleShot = 0;
+
+        # carga inicial de chaff
+        me.cmCount.setIntValue(CHAFF_LOAD);
     },
 
-    # Loop for burst release
-    flareBurstLoop: func {
-        # If burst is active and there are flares available
-        if (!me.flareBurstActive or me.flareBurstRemaining <= 0) {
-            me.flareBurstTimer.stop();
-            me.flareBurstActive = 0;
-            return;
-        }
+    # fim do programa (sem cartuchos, sem energia ou terminou)
+    endBurst: func {
+        me.flareBurstTimer.stop();
+        me.flareBurstActive = 0;
+        # cmRelease e os gatilhos esq/dir sao zerados no loop() (0,1 s depois),
+        # para o FlightGear ver o ultimo pulso dos submodelos
+    },
 
-        # If energy or flares out, abort
-        if (me.cmElec.getDoubleValue() <= 20 or me.cmCount.getIntValue() <= 0) {
-            me.flareBurstTimer.stop();
-            me.flareBurstActive = 0;
-            return;
+    # Chaff infinito (teste): mantem o contador cheio
+    refillChaff: func {
+        if (CHAFF_INFINITE and me.cmCount.getIntValue() < CHAFF_LOAD) {
+            me.cmCount.setIntValue(CHAFF_LOAD);
         }
+    },
 
-        # Release on pair and play sound
+    # inicia o programa de chaff (chamado no toque do "q")
+    startProgram: func {
+        me.flareBurstActive = 1;
+        me.cmSalvoLeft = CHAFF_SALVO_QTY;
+        me.cmBurstLeft = CHAFF_BURST_QTY;
+        me.cmCartridge = 0;
+        me.cmNextFire = me.elapsed.getDoubleValue();
+
+        me.flareBurstLoop();          # 1o cartucho imediatamente
+        if (me.flareBurstActive) me.flareBurstTimer.start();
+    },
+
+    # solta 1 cartucho (visual + contador; o 1o de cada salvo vai para a rede)
+    releaseCartridge: func {
         me.cmReleaseSound.setBoolValue(1);
         me.cmRelease.setBoolValue(1);
+
+        # Efeito visual: 1 modelo por cartucho, alternando esq/dir. O lado
+        # oposto volta para false, garantindo uma nova borda de subida.
+        if (math.mod(me.cmCartridge, 2) == 0) {
+            me.cmReleaseR.setBoolValue(0);
+            me.cmReleaseL.setBoolValue(1);
+        } else {
+            me.cmReleaseL.setBoolValue(0);
+            me.cmReleaseR.setBoolValue(1);
+        }
         me.cmFlare.setDoubleValue(rand());
         me.cmChaff.setDoubleValue(rand());
 
-        # ONLY the first release send the network message 
-        if (!me.flareNetSent) {
-            damage.flare_released();
-            me.flareNetSent = 1;
+        # 1o cartucho de cada salvo = uma nuvem nova no ASA
+        if (me.cmBurstLeft == CHAFF_BURST_QTY) {
+            damage.chaff_released();
         }
 
-        # Update counter and time
+        me.cmCount.setIntValue(me.cmCount.getIntValue() - 1);
         me.flareCount = me.cmCount.getIntValue();
         me.flareStart = me.elapsed.getDoubleValue();
+        me.cmCartridge += 1;
+    },
 
-        me.flareBurstRemaining -= 1;
-
-        if (me.flareBurstRemaining <= 0) {
-            me.flareBurstTimer.stop();
-            me.flareBurstActive = 0;
+    # Loop do programa (passo = CHAFF_BURST_INTERVAL)
+    flareBurstLoop: func {
+        if (!me.flareBurstActive) {
+            me.endBurst();
+            return;
         }
+
+        # sem energia ou sem chaff: aborta
+        if (me.cmElec.getDoubleValue() <= 20 or me.cmCount.getIntValue() <= 0) {
+            me.endBurst();
+            return;
+        }
+
+        # esperando o intervalo entre salvos
+        if (me.elapsed.getDoubleValue() < me.cmNextFire - 0.001) return;
+
+        me.releaseCartridge();
+        me.cmBurstLeft -= 1;
+
+        if (me.cmBurstLeft > 0) {
+            # proximo cartucho do mesmo salvo
+            me.cmNextFire = me.elapsed.getDoubleValue() + CHAFF_BURST_INTERVAL;
+        } else {
+            # salvo completo
+            me.cmSalvoLeft -= 1;
+            if (me.cmSalvoLeft <= 0) {
+                me.endBurst();
+                return;
+            }
+            me.cmBurstLeft = CHAFF_BURST_QTY;
+            me.cmNextFire = me.elapsed.getDoubleValue() + CHAFF_SALVO_INTERVAL;
+        }
+
+        if (me.cmCount.getIntValue() <= 0) me.endBurst();
     },
 
     cmReleaseSound: props.globals.getNode("ai/submodels/submodel[0]/flare-release-snd"),
@@ -327,7 +417,9 @@ var medium_fast = {
     cmReleaseCmd: props.globals.getNode("ai/submodels/submodel[0]/flare-release-cmd"),
     cmReleaseAutoCmd: props.globals.getNode("ai/submodels/submodel[0]/flare-auto-release-cmd"),
     cmRelease: props.globals.getNode("ai/submodels/submodel[0]/flare-release"),
-    cmCount: props.globals.getNode("ai/submodels/submodel[0]/count"),
+    cmReleaseL: props.globals.getNode("ai/submodels/submodel[0]/flare-release-l", 1),
+    cmReleaseR: props.globals.getNode("ai/submodels/submodel[0]/flare-release-r", 1),
+    cmCount: props.globals.getNode("f16/ews/chaff-count", 1),
     elapsed: props.globals.getNode("sim/time/elapsed-sec"),
     cmElec: props.globals.getNode("fdm/jsbsim/elec/bus/emergency-dc-2"),
     cmFlare: props.globals.getNode("rotors/main/blade[3]/flap-deg"),
@@ -341,24 +433,18 @@ var medium_fast = {
         var flareOnA = me.cmReleaseAutoCmd.getDoubleValue() > rand() and me.cmKnob.getIntValue() == 2 and me.cmReleaseCmd.getBoolValue() == 0 and me.cmSwitch.getBoolValue() == 1;
         flareOn = flareOn or flareOnA;
 
-        if (flareOn == 1 and me.cmRelease.getBoolValue() == 0
+        if (flareOn == 1 and !me.flareBurstActive and me.cmRelease.getBoolValue() == 0
                 and me.cmReleaseOutSound.getBoolValue() == 0
                 and me.cmReleaseSound.getBoolValue() == 0) {
 
+            me.refillChaff();
             me.flareCount = me.cmCount.getIntValue();
             me.flareStart = me.elapsed.getDoubleValue();
             me.cmReleaseCmd.setBoolValue(0);
 
             if (me.flareCount > 0 and me.cmElec.getDoubleValue() > 20) {
-                # Init the flare burst release
-                me.flareBurstActive = 1;
-                me.flareBurstRemaining = FLARE_BURST_COUNT;
-                me.flareNetSent = 0;
-
-                # first pair imediately
-                me.flareBurstLoop();
-                # the others will be release in 0,07s interval
-                me.flareBurstTimer.start();
+                # inicia o programa (CHAFF_SALVO_QTY salvos x CHAFF_BURST_QTY cartuchos)
+                me.startProgram();
 
             } else {
                 # flares or energy out
@@ -374,9 +460,12 @@ var medium_fast = {
         if (me.cmReleaseOutSound.getBoolValue() == 1 and (me.flareStart + 1.5) < me.elapsed.getDoubleValue()) {
             me.cmReleaseOutSound.setBoolValue(0);
         }
-        if (me.flareCount > me.cmCount.getIntValue()) {
-            # A cm was released in last loop, we stop releasing cm, so user have to press button again to release new.
+        if (!me.flareBurstActive and me.cmRelease.getBoolValue() == 1) {
+            # programa terminou: zera os gatilhos dos submodelos; o piloto
+            # precisa apertar de novo
             me.cmRelease.setBoolValue(0);
+            me.cmReleaseL.setBoolValue(0);
+            me.cmReleaseR.setBoolValue(0);
             me.flareCount = -1;
         }
 
@@ -1454,7 +1543,7 @@ subsystem = SubSystem_Main.new("SubSystem_Main");
 
 
 var reloadCannon = func {
-    setprop("ai/submodels/submodel[0]/count", 60); # Quantity of chaff/flares
+    setprop("f16/ews/chaff-count", CHAFF_LOAD); # Quantity of chaff (CHAFF_DISPENSERS x CHAFF_PER_DISPENSER)
     pylons.cannon.reloadAmmo();
 }
 
